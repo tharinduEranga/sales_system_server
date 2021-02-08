@@ -16,6 +16,7 @@
 -- ----------------------------
 -- Table structure for product
 -- ----------------------------
+DROP TABLE IF EXISTS `product`;
 
 CREATE TABLE `product`
 (

@@ -41,7 +41,7 @@ class SalesSystemServerApplicationTests {
 
     @Test
     void testGetProduct() {
-        final Optional<Product> optionalProduct = productRepository.findById("1");
+        final Optional<Product> optionalProduct = productRepository.findById("12cbc2ca-69d8-11eb-8f8a-a81e849e9ba1");
         log.info("Searched Product: {}",
                 optionalProduct.isPresent() ? optionalProduct.get() : "No product");
     }
