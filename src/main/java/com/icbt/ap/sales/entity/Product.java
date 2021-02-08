@@ -1,5 +1,6 @@
 package com.icbt.ap.sales.entity;
 
+import com.icbt.ap.sales.enums.ProductStatus;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
@@ -16,5 +17,6 @@ public class Product {
     private String id;
     @EqualsAndHashCode.Exclude
     private String name;
+    private ProductStatus status;
     private LocalDateTime createdAt;
 }

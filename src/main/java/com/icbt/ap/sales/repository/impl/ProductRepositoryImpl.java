@@ -1,6 +1,7 @@
 package com.icbt.ap.sales.repository.impl;
 
 import com.icbt.ap.sales.entity.Product;
+import com.icbt.ap.sales.enums.ProductStatus;
 import com.icbt.ap.sales.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -45,19 +46,20 @@ public class ProductRepositoryImpl implements ProductRepository {
 
     @Override
     public void save(Product product) {
-        jdbcTemplate.update("INSERT INTO product (id, name) " + "VALUES (UUID(), ?)",
-                product.getName());
+        jdbcTemplate.update("INSERT INTO product (id, name, status) " + "VALUES (UUID(), ?, ?)",
+                product.getName(), product.getStatus().getId());
     }
 
     @Override
     public void update(Product product) {
-        jdbcTemplate.update("UPDATE product " + " SET name = ? " + " WHERE id = ?",
-                product.getName(), product.getId());
+        jdbcTemplate.update("UPDATE product " + " SET name = ?, status = ? " + " WHERE id = ?",
+                product.getName(), product.getStatus().getId(), product.getId());
     }
 
     @Override
     public void delete(String id) {
-        jdbcTemplate.update("DELETE FROM product WHERE id=?", id);
+        jdbcTemplate.update("UPDATE product " + " SET status = ? " + " WHERE id = ?",
+                ProductStatus.DELETED.getId(), id);
     }
 
     @Override
@@ -78,6 +80,7 @@ public class ProductRepositoryImpl implements ProductRepository {
             return Product.builder()
                     .id(resultSet.getString("id"))
                     .name(resultSet.getString("name"))
+                    .status(ProductStatus.getById(resultSet.getInt("status")))
                     .createdAt(resultSet.getTimestamp("created_at").toLocalDateTime())
                     .build();
         }

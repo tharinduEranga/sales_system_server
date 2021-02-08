@@ -1,6 +1,7 @@
 package com.icbt.ap.sales.service.impl;
 
 import com.icbt.ap.sales.entity.Product;
+import com.icbt.ap.sales.enums.ProductStatus;
 import com.icbt.ap.sales.repository.ProductRepository;
 import com.icbt.ap.sales.repository.impl.ProductRepositoryImpl;
 
@@ -46,7 +47,7 @@ class ProductServiceImplTest {
     @Test
     void add() {
         String name = "Sugar";
-        productService.add(Product.builder().name(name).build());
+        productService.add(Product.builder().name(name).status(ProductStatus.ACTIVE).build());
     }
 
     @Test

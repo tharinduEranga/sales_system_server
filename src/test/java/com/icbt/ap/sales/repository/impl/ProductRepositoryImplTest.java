@@ -1,6 +1,7 @@
 package com.icbt.ap.sales.repository.impl;
 
 import com.icbt.ap.sales.entity.Product;
+import com.icbt.ap.sales.enums.ProductStatus;
 import com.icbt.ap.sales.repository.ProductRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -54,7 +55,7 @@ class ProductRepositoryImplTest {
 
     @Test
     void save() {
-        Product product = Product.builder().name("Pineapple").build();
+        Product product = Product.builder().name("Pineapple").status(ProductStatus.ACTIVE).build();
         productRepository.save(product);
         product = productRepository.findByName(product.getName());
         assertEquals("Pineapple", product.getName());
