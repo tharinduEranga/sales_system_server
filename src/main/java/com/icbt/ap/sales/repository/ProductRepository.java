@@ -11,4 +11,6 @@ import javax.sql.DataSource;
  */
 public interface ProductRepository extends CrudRepository<String, Product> {
     void setDataSource(DataSource dataSource);
+
+    Product findByName(String name);
 }

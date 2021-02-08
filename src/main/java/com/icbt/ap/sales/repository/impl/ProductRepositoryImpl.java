@@ -4,6 +4,7 @@ import com.icbt.ap.sales.entity.Product;
 import com.icbt.ap.sales.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -35,12 +36,16 @@ public class ProductRepositoryImpl implements ProductRepository {
 
         String sql = "SELECT * FROM product WHERE id = ?";
 
-        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, (resultSet, rowNum) ->
-                        Product.builder()
-                                .id(resultSet.getString("id"))
-                                .name(resultSet.getString("name"))
-                                .build(),
-                id));
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, (resultSet, rowNum) ->
+                            Product.builder()
+                                    .id(resultSet.getString("id"))
+                                    .name(resultSet.getString("name"))
+                                    .build(),
+                    id));
+        } catch (EmptyResultDataAccessException ex) {
+            return Optional.empty();
+        }
     }
 
     @Override
@@ -60,6 +65,23 @@ public class ProductRepositoryImpl implements ProductRepository {
         jdbcTemplate.update("DELETE FROM product WHERE id=?", id);
     }
 
+    @Override
+    public Product findByName(String name) {
+
+        String sql = "SELECT * FROM product WHERE name = ?";
+
+        try {
+            return jdbcTemplate.queryForObject(sql, (resultSet, rowNum) ->
+                            Product.builder()
+                                    .id(resultSet.getString("id"))
+                                    .name(resultSet.getString("name"))
+                                    .build(),
+                    name);
+        } catch (EmptyResultDataAccessException ex) {
+            return null;
+        }
+    }
+
     private static class ProductRowMapper implements RowMapper<Product> {
         @Override
         public Product mapRow(ResultSet resultSet, int rowNum) throws SQLException {
@@ -75,4 +97,5 @@ public class ProductRepositoryImpl implements ProductRepository {
     public void setDataSource(DataSource dataSource) {
         jdbcTemplate = new JdbcTemplate(dataSource);
     }
+
 }
