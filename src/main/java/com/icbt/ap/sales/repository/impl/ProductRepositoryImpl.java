@@ -37,12 +37,7 @@ public class ProductRepositoryImpl implements ProductRepository {
         String sql = "SELECT * FROM product WHERE id = ?";
 
         try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, (resultSet, rowNum) ->
-                            Product.builder()
-                                    .id(resultSet.getString("id"))
-                                    .name(resultSet.getString("name"))
-                                    .build(),
-                    id));
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, new ProductRowMapper(), id));
         } catch (EmptyResultDataAccessException ex) {
             return Optional.empty();
         }
@@ -71,12 +66,7 @@ public class ProductRepositoryImpl implements ProductRepository {
         String sql = "SELECT * FROM product WHERE name = ?";
 
         try {
-            return jdbcTemplate.queryForObject(sql, (resultSet, rowNum) ->
-                            Product.builder()
-                                    .id(resultSet.getString("id"))
-                                    .name(resultSet.getString("name"))
-                                    .build(),
-                    name);
+            return jdbcTemplate.queryForObject(sql, new ProductRowMapper(), name);
         } catch (EmptyResultDataAccessException ex) {
             return null;
         }
