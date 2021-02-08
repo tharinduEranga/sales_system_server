@@ -65,6 +65,7 @@ public class ProductRepositoryImpl implements ProductRepository {
             return Product.builder()
                     .id(resultSet.getString("id"))
                     .name(resultSet.getString("name"))
+                    .createdAt(resultSet.getTimestamp("created_at").toLocalDateTime())
                     .build();
         }
     }
