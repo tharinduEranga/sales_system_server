@@ -62,6 +62,11 @@ public class ProductController implements CommonController {
         return modifyProduct(request);
     }
 
+    @DeleteMapping(path = "{productId}")
+    public ResponseEntity<CommonResponseDTO> deleteProduct(@PathVariable(name = "productId") String productId) {
+        return deleteProductTmp(productId);
+    }
+
 
     /*Internal functions*/
 
@@ -89,6 +94,14 @@ public class ProductController implements CommonController {
         return new ResponseEntity<>(new CommonResponseDTO(true,
                 getMessage("success.confirmation.common.updated.code"),
                 getMessage("success.confirmation.product.updated.message")),
+                HttpStatus.OK);
+    }
+
+    private ResponseEntity<CommonResponseDTO> deleteProductTmp(String productId) {
+        productService.delete(productId);
+        return new ResponseEntity<>(new CommonResponseDTO(true,
+                getMessage("success.confirmation.common.updated.code"),
+                getMessage("success.confirmation.product.deleted.message")),
                 HttpStatus.OK);
     }
 
