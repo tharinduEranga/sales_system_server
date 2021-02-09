@@ -78,8 +78,10 @@ public class AppExceptionHandler {
     private ResponseEntity<Object> getBadRequestError(Exception ex, String code, Locale locale) {
         log.error("Bad request Exception: " + ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(new CommonResponseDTO(false, messageSource.getMessage(
-                        code, ex.getStackTrace(), locale), ex.getMessage()));
+                .body(new CommonResponseDTO(false,
+                        messageSource.getMessage(code, ex.getStackTrace(), locale),
+                        messageSource.getMessage(ex.getMessage(), ex.getStackTrace(), locale))
+                );
     }
 }
 
