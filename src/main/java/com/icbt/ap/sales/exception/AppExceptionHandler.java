@@ -32,7 +32,7 @@ public class AppExceptionHandler {
     @ExceptionHandler(value = {CustomServiceException.class})
     public ResponseEntity<Object> handleInvalidInputException(CustomServiceException ex, Locale locale) {
         log.error("Business Exception: " + ex.getMessage(), ex);
-        return getBadRequestError(ex, ex.getCode(), locale);
+        return getBusinessError(ex, ex.getCode(), locale);
     }
 
     @ExceptionHandler(value = {Exception.class})
@@ -74,14 +74,19 @@ public class AppExceptionHandler {
                         errorList.isEmpty() ? "Invalid request data" : errorList.get(0)));
     }
 
-
-    private ResponseEntity<Object> getBadRequestError(Exception ex, String code, Locale locale) {
+    private ResponseEntity<Object> getBusinessError(CustomServiceException ex, String code, Locale locale) {
         log.error("Bad request Exception: " + ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new CommonResponseDTO(false,
                         messageSource.getMessage(code, ex.getStackTrace(), locale),
                         messageSource.getMessage(ex.getMessage(), ex.getStackTrace(), locale))
                 );
+    }
+
+    private ResponseEntity<Object> getBadRequestError(Exception ex, String code, Locale locale) {
+        log.error("Bad request Exception: " + ex.getMessage(), ex);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new CommonResponseDTO(false, code, ex.getMessage()));
     }
 }
 
