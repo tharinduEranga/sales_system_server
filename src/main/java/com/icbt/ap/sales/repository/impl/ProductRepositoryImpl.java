@@ -28,16 +28,18 @@ public class ProductRepositoryImpl implements ProductRepository {
 
     @Override
     public List<Product> findAll() {
-        return jdbcTemplate.query("SELECT * FROM product", new ProductRowMapper());
+        return jdbcTemplate.query("SELECT * FROM product WHERE status <> ?",
+                new ProductRowMapper(), ProductStatus.DELETED.getId());
     }
 
     @Override
     public Optional<Product> findById(String id) {
 
-        String sql = "SELECT * FROM product WHERE id = ?";
+        String sql = "SELECT * FROM product WHERE status <> ? AND id = ?";
 
         try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, new ProductRowMapper(), id));
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, new ProductRowMapper(),
+                    ProductStatus.DELETED.getId(), id));
         } catch (EmptyResultDataAccessException ex) {
             return Optional.empty();
         }
@@ -64,10 +66,11 @@ public class ProductRepositoryImpl implements ProductRepository {
     @Override
     public Product findByName(String name) {
 
-        String sql = "SELECT * FROM product WHERE name = ?";
+        String sql = "SELECT * FROM product WHERE status <> ? AND name = ?";
 
         try {
-            return jdbcTemplate.queryForObject(sql, new ProductRowMapper(), name);
+            return jdbcTemplate.queryForObject(sql, new ProductRowMapper(),
+                    ProductStatus.DELETED.getId(), name);
         } catch (EmptyResultDataAccessException ex) {
             return null;
         }
