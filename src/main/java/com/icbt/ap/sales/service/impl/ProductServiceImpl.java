@@ -25,17 +25,23 @@ public class ProductServiceImpl implements ProductService {
     public void add(Product product) {
         /*checks whether the product name already exists*/
         final Product productByName = productRepository.findByName(product.getName());
-        if (productByName != null) throw new CustomServiceException(
-                "error.validation.product.name.already.exist.code",
-                "error.validation.product.name.already.exist.message"
-        );
-
+        if (productByName != null) throwProductAlreadyExistException();
         productRepository.save(product);
     }
 
     @Override
     public void update(Product product) {
+        /*validates the incoming data*/
+        final Product productById = getById(product.getId());
+        /*checks whether the product name already exists*/
+        final Product productByName = productRepository.findByName(product.getName());
+        if ((productByName != null) && (!productByName.getId().equals(product.getId())))
+            throwProductAlreadyExistException();
 
+        productById.setName(product.getName());
+        if (product.getStatus() != null)
+            productById.setStatus(product.getStatus());
+        productRepository.update(product);
     }
 
     @Override
@@ -46,7 +52,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Product getById(String id) {
         return productRepository.findById(id).orElseThrow(() -> new CustomServiceException(
-                "error.validation.product.not.found.code",
+                "error.validation.common.not.found.code",
                 "error.validation.product.not.found.message"
         ));
     }
@@ -54,5 +60,16 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<Product> getAll() {
         return productRepository.findAll();
+    }
+
+
+    /*Internal functions below*/
+
+    private void throwProductAlreadyExistException() {
+        throw new CustomServiceException(
+                "error.validation.common.already.exist.code",
+                "error.validation.product.name.already.exist.message"
+        );
+
     }
 }

@@ -1,12 +1,14 @@
 package com.icbt.ap.sales.controller.v1.rest;
 
 import com.icbt.ap.sales.controller.CommonController;
-import com.icbt.ap.sales.controller.v1.model.ProductResponse;
+import com.icbt.ap.sales.controller.v1.model.request.ProductUpdateRequest;
+import com.icbt.ap.sales.controller.v1.model.response.ProductResponse;
 import com.icbt.ap.sales.controller.v1.model.request.ProductSaveRequest;
 import com.icbt.ap.sales.dto.CommonResponseDTO;
 import com.icbt.ap.sales.dto.ContentResponseDTO;
 import com.icbt.ap.sales.entity.Product;
 import com.icbt.ap.sales.enums.ProductStatus;
+import com.icbt.ap.sales.exception.CustomServiceException;
 import com.icbt.ap.sales.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -55,6 +57,13 @@ public class ProductController implements CommonController {
         return addNewProduct(request);
     }
 
+    @PutMapping(path = "")
+    public ResponseEntity<CommonResponseDTO> updateProduct(@Valid @RequestBody ProductUpdateRequest request) {
+        return modifyProduct(request);
+    }
+
+
+    /*Internal functions*/
 
     private ResponseEntity<ContentResponseDTO<List<ProductResponse>>> getAllProducts() {
         return ResponseEntity.ok(new ContentResponseDTO<>(true,
@@ -72,6 +81,15 @@ public class ProductController implements CommonController {
                 getMessage("success.confirmation.common.added.code"),
                 getMessage("success.confirmation.product.added.message")),
                 HttpStatus.CREATED);
+    }
+
+    private ResponseEntity<CommonResponseDTO> modifyProduct(ProductUpdateRequest request) {
+        validateUpdateProductRequest(request);
+        productService.update(getProductUpdateEntity(request));
+        return new ResponseEntity<>(new CommonResponseDTO(true,
+                getMessage("success.confirmation.common.updated.code"),
+                getMessage("success.confirmation.product.updated.message")),
+                HttpStatus.OK);
     }
 
     private List<ProductResponse> getProductResponseList(List<Product> products) {
@@ -95,6 +113,22 @@ public class ProductController implements CommonController {
                 .name(request.getName())
                 .status(ProductStatus.ACTIVE)
                 .build();
+    }
+
+    private Product getProductUpdateEntity(ProductUpdateRequest request) {
+        return Product.builder()
+                .id(request.getId())
+                .name(request.getName())
+                .status(ProductStatus.getById(request.getStatusId()))
+                .build();
+    }
+
+    private void validateUpdateProductRequest(ProductUpdateRequest request) {
+        if ((request.getStatusId() != null) && (ProductStatus.getById(request.getStatusId()) == null))
+            throw new CustomServiceException(
+                    "error.validation.common.not.found.code",
+                    "error.validation.common.status.not.found.message"
+            );
     }
 
     private String getFormattedDateTime(LocalDateTime dateTime) {

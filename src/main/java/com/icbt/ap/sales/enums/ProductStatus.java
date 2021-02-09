@@ -16,14 +16,18 @@ public enum ProductStatus {
 
     ACTIVE(1, "Active"), INACTIVE(0, "Inactive"), DELETED(-1, "Deleted");
 
-    private final int id;
+    private final Integer id;
     private final String description;
 
     public static List<ProductStatus> getList() {
         return Arrays.asList(ProductStatus.values().clone());
     }
 
-    public static ProductStatus getById(int id) {
-        return getList().stream().filter(productStatus -> productStatus.id == id).findFirst().orElse(null);
+    public static ProductStatus getById(Integer id) {
+        return getList()
+                .stream()
+                .filter(productStatus -> productStatus.id.equals(id))
+                .findFirst()
+                .orElse(null);
     }
 }

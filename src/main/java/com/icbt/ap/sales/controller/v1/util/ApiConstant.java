@@ -16,6 +16,7 @@ public final class ApiConstant {
     public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(DATE_TIME_FORMAT);
 
     public static final class Validation {
+        public static final String ID_REQUIRED = "Id is mandatory";
         public static final String NAME_REQUIRED = "Name is mandatory";
     }
 }

@@ -1,4 +1,4 @@
-package com.icbt.ap.sales.controller.v1.model;
+package com.icbt.ap.sales.controller.v1.model.response;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
