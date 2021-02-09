@@ -39,7 +39,8 @@ public class AppExceptionHandler {
     public ResponseEntity<CommonResponseDTO> handleInvalidInputException(Exception ex, Locale locale) {
         log.error("Server Exception: " + ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new CommonResponseDTO(HttpStatus.INTERNAL_SERVER_ERROR.toString(), "Something went wrong! "));
+                .body(new CommonResponseDTO(false, HttpStatus.INTERNAL_SERVER_ERROR.toString(),
+                        "Something went wrong! "));
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
@@ -68,15 +69,16 @@ public class AppExceptionHandler {
 
         result.getGlobalErrors().forEach(fieldError -> errorList.add(fieldError.getDefaultMessage()));
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new CommonResponseDTO(HttpStatus.BAD_REQUEST.toString(),
-                errorList.isEmpty() ? "Invalid request data" : errorList.get(0)));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new CommonResponseDTO(false, HttpStatus.BAD_REQUEST.toString(),
+                        errorList.isEmpty() ? "Invalid request data" : errorList.get(0)));
     }
 
 
     private ResponseEntity<Object> getBadRequestError(Exception ex, String code, Locale locale) {
         log.error("Bad request Exception: " + ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(new CommonResponseDTO(messageSource.getMessage(
+                .body(new CommonResponseDTO(false, messageSource.getMessage(
                         code, ex.getStackTrace(), locale), ex.getMessage()));
     }
 }

@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -33,11 +34,10 @@ class ProductRepositoryImplTest {
     private final ProductRepository productRepository;
 
     private ProductRepositoryImplTest() {
-        productRepository = new ProductRepositoryImpl();
         DataSource dataSource = new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.H2)
                 .addScript("classpath:test/sales_db_test.sql")
                 .build();
-        productRepository.setDataSource(dataSource);
+        productRepository = new ProductRepositoryImpl(new JdbcTemplate(dataSource));
     }
 
     @Test

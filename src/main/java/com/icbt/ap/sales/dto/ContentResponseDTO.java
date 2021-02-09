@@ -4,15 +4,14 @@ import lombok.*;
 
 /**
  * @author Tharindu Eranga
- * @date Mon 08 Feb 2021
+ * @date Tue 09 Feb 2021
  */
 @AllArgsConstructor
 @Getter
 @Setter
 @Builder
 @ToString(callSuper = true)
-public class CommonResponseDTO {
+public class ContentResponseDTO<T> {
     private boolean success;
-    private String code;
-    private String message;
+    private T data;
 }

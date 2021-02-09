@@ -17,4 +17,5 @@ public interface CrudRepository<K, T> {
     void update(T entity);
 
     void delete(K id);
+
 }

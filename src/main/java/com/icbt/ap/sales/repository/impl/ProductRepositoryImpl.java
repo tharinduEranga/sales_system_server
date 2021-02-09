@@ -10,7 +10,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
-import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -25,7 +24,7 @@ import java.util.Optional;
 @Slf4j
 public class ProductRepositoryImpl implements ProductRepository {
 
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
     @Override
     public List<Product> findAll() {
@@ -84,11 +83,6 @@ public class ProductRepositoryImpl implements ProductRepository {
                     .createdAt(resultSet.getTimestamp("created_at").toLocalDateTime())
                     .build();
         }
-    }
-
-    @Override
-    public void setDataSource(DataSource dataSource) {
-        jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
 }
