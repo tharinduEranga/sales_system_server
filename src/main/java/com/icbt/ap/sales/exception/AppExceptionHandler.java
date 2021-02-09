@@ -39,7 +39,7 @@ public class AppExceptionHandler {
     public ResponseEntity<CommonResponseDTO> handleInvalidInputException(Exception ex, Locale locale) {
         log.error("Server Exception: " + ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new CommonResponseDTO(false, HttpStatus.INTERNAL_SERVER_ERROR.toString(),
+                .body(new CommonResponseDTO(false, HttpStatus.INTERNAL_SERVER_ERROR.name(),
                         "Something went wrong! "));
     }
 
@@ -47,14 +47,14 @@ public class AppExceptionHandler {
     public final ResponseEntity<Object> handleArgumentTypeMismatchException(
             MethodArgumentTypeMismatchException ex, Locale locale) {
 
-        return getBadRequestError(ex, HttpStatus.BAD_REQUEST.toString(), locale);
+        return getBadRequestError(ex, HttpStatus.BAD_REQUEST.name(), locale);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public final ResponseEntity<Object> handleArgumentTypeMismatchException(
             HttpMessageNotReadableException ex, Locale locale) {
 
-        return getBadRequestError(ex, HttpStatus.BAD_REQUEST.toString(), locale);
+        return getBadRequestError(ex, HttpStatus.BAD_REQUEST.name(), locale);
     }
 
 
@@ -65,12 +65,12 @@ public class AppExceptionHandler {
 
         List<String> errorList = new ArrayList<>();
         result.getFieldErrors().forEach(fieldError -> errorList.add(fieldError.getField() + " : " + fieldError.getDefaultMessage()
-                + " : rejected value [" + fieldError.getRejectedValue() + "]"));
+                + " : rejected value: " + fieldError.getRejectedValue() + ""));
 
         result.getGlobalErrors().forEach(fieldError -> errorList.add(fieldError.getDefaultMessage()));
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(new CommonResponseDTO(false, HttpStatus.BAD_REQUEST.toString(),
+                .body(new CommonResponseDTO(false, HttpStatus.BAD_REQUEST.name(),
                         errorList.isEmpty() ? "Invalid request data" : errorList.get(0)));
     }
 

@@ -15,7 +15,7 @@ public class AppConfig {
     @Bean
     public MessageSource messageSource() {
         ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
-        messageSource.setBasename("classpath:messages/exception-message");
+        messageSource.setBasenames("classpath:messages/exception-message", "classpath:messages/success-message");
         messageSource.setCacheSeconds(60); //reload messages every 60 seconds
         return messageSource;
     }
