@@ -21,8 +21,8 @@ DROP TABLE IF EXISTS `product`;
 CREATE TABLE `product`
 (
     `id`         varchar(255) NOT NULL PRIMARY KEY,
-    `name`       varchar(255) NOT NULL UNIQUE,
-    `status`     int(10)               DEFAULT NULL,
+    `name`       varchar(255) NOT NULL,
+    `status`     int(10)      NOT NULL DEFAULT 1,
     `created_at` timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 

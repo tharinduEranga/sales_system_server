@@ -45,7 +45,7 @@ public class ProductController implements CommonController {
         return getAllProducts();
     }
 
-    @GetMapping(path = "{productId}")
+    @GetMapping(path = "/{productId}")
     public ResponseEntity<ContentResponseDTO<ProductResponse>> getProduct(
             @PathVariable(name = "productId") String productId) {
 
@@ -62,7 +62,7 @@ public class ProductController implements CommonController {
         return modifyProduct(request);
     }
 
-    @DeleteMapping(path = "{productId}")
+    @DeleteMapping(path = "/{productId}")
     public ResponseEntity<CommonResponseDTO> deleteProduct(@PathVariable(name = "productId") String productId) {
         return deleteProductTmp(productId);
     }
