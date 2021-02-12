@@ -136,7 +136,22 @@ class ProductControllerTest {
     }
 
     @Test
-    void updateProduct() {
+    void updateProduct() throws Exception {
+        // Send course as body to /students/Student1/courses
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .put(PRODUCT_PATH)
+                .accept(MediaType.APPLICATION_JSON)
+                .content("{\n" +
+                        "  \"id\": \"12\",\n" +
+                        "  \"name\": \"Apple\"\n" +
+                        "}")
+                .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+
+        MockHttpServletResponse response = result.getResponse();
+
+        assertEquals(HttpStatus.OK.value(), response.getStatus());
     }
 
     @Test
