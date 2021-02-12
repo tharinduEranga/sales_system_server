@@ -155,6 +155,17 @@ class ProductControllerTest {
     }
 
     @Test
-    void deleteProduct() {
+    void deleteProduct() throws Exception {
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .delete(PRODUCT_PATH + "/121212")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+
+        MockHttpServletResponse response = result.getResponse();
+
+        assertEquals(HttpStatus.OK.value(), response.getStatus());
     }
 }
