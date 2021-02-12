@@ -151,10 +151,10 @@ public class ProductController implements CommonController {
     }
 
     private String getCode(String key) {
-        return messageSource.getMessage(key, new Object[0], DEFAULT_SUCCESS_CODE, Locale.getDefault());
+        return messageSource.getMessage(key, new Object[0], Locale.getDefault());
     }
 
     private String getMessage(String key) {
-        return messageSource.getMessage(key, new Object[0], DEFAULT_SUCCESS_MESSAGE, Locale.getDefault());
+        return messageSource.getMessage(key, new Object[0], Locale.getDefault());
     }
 }
