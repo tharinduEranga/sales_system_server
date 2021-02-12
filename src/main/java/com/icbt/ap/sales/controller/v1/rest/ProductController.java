@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
+import static com.icbt.ap.sales.constant.AppConstant.DEFAULT_SUCCESS_CODE;
+import static com.icbt.ap.sales.constant.AppConstant.DEFAULT_SUCCESS_MESSAGE;
 import static com.icbt.ap.sales.controller.v1.util.ApiConstant.DATE_TIME_FORMATTER;
 import static com.icbt.ap.sales.controller.v1.util.ApiConstant.VERSION;
 
@@ -83,7 +85,7 @@ public class ProductController implements CommonController {
     private ResponseEntity<CommonResponseDTO> addNewProduct(ProductSaveRequest request) {
         productService.add(getProductSaveEntity(request));
         return new ResponseEntity<>(new CommonResponseDTO(true,
-                getMessage("success.confirmation.common.added.code"),
+                getCode("success.confirmation.common.added.code"),
                 getMessage("success.confirmation.product.added.message")),
                 HttpStatus.CREATED);
     }
@@ -92,7 +94,7 @@ public class ProductController implements CommonController {
         validateUpdateProductRequest(request);
         productService.update(getProductUpdateEntity(request));
         return new ResponseEntity<>(new CommonResponseDTO(true,
-                getMessage("success.confirmation.common.updated.code"),
+                getCode("success.confirmation.common.updated.code"),
                 getMessage("success.confirmation.product.updated.message")),
                 HttpStatus.OK);
     }
@@ -100,7 +102,7 @@ public class ProductController implements CommonController {
     private ResponseEntity<CommonResponseDTO> deleteProductTmp(String productId) {
         productService.delete(productId);
         return new ResponseEntity<>(new CommonResponseDTO(true,
-                getMessage("success.confirmation.common.updated.code"),
+                getCode("success.confirmation.common.updated.code"),
                 getMessage("success.confirmation.product.deleted.message")),
                 HttpStatus.OK);
     }
@@ -148,7 +150,11 @@ public class ProductController implements CommonController {
         return DATE_TIME_FORMATTER.format(dateTime);
     }
 
+    private String getCode(String key) {
+        return messageSource.getMessage(key, new Object[0], DEFAULT_SUCCESS_CODE, Locale.getDefault());
+    }
+
     private String getMessage(String key) {
-        return messageSource.getMessage(key, new Object[0], Locale.getDefault());
+        return messageSource.getMessage(key, new Object[0], DEFAULT_SUCCESS_MESSAGE, Locale.getDefault());
     }
 }
