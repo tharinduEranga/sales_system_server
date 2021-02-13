@@ -23,8 +23,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
-import static com.icbt.ap.sales.constant.AppConstant.DEFAULT_SUCCESS_CODE;
-import static com.icbt.ap.sales.constant.AppConstant.DEFAULT_SUCCESS_MESSAGE;
 import static com.icbt.ap.sales.controller.v1.util.ApiConstant.DATE_TIME_FORMATTER;
 import static com.icbt.ap.sales.controller.v1.util.ApiConstant.VERSION;
 
