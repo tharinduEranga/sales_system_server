@@ -42,6 +42,7 @@ public class ProductController implements CommonController {
 
     @GetMapping(path = "")
     public ResponseEntity<ContentResponseDTO<List<ProductResponse>>> getProducts() {
+        log.info("Get all products");
         return getAllProducts();
     }
 
@@ -49,21 +50,25 @@ public class ProductController implements CommonController {
     public ResponseEntity<ContentResponseDTO<ProductResponse>> getProduct(
             @PathVariable(name = "productId") String productId) {
 
+        log.info("Get product by id, Product id: {}", productId);
         return getProductById(productId);
     }
 
     @PostMapping(path = "")
     public ResponseEntity<CommonResponseDTO> saveProduct(@Valid @RequestBody ProductSaveRequest request) {
+        log.info("Add new product, Product: {}", request);
         return addNewProduct(request);
     }
 
     @PutMapping(path = "")
     public ResponseEntity<CommonResponseDTO> updateProduct(@Valid @RequestBody ProductUpdateRequest request) {
+        log.info("Update product, Product: {}", request);
         return modifyProduct(request);
     }
 
     @DeleteMapping(path = "/{productId}")
     public ResponseEntity<CommonResponseDTO> deleteProduct(@PathVariable(name = "productId") String productId) {
+        log.info("delete product by id, Product id: {}", productId);
         return deleteProductTmp(productId);
     }
 
