@@ -122,6 +122,7 @@ public class ProductController implements CommonController {
                 .id(product.getId())
                 .name(product.getName())
                 .status(product.getStatus().getDescription())
+                .statusId(product.getStatus().getId())
                 .createdAt(getFormattedDateTime(product.getCreatedAt()))
                 .build();
     }

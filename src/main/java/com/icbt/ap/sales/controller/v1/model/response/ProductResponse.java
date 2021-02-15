@@ -15,5 +15,6 @@ public class ProductResponse {
     private String id;
     private String name;
     private String status;
+    private Integer statusId;
     private String createdAt;
 }
