@@ -18,5 +18,7 @@ public final class ApiConstant {
     public static final class Validation {
         public static final String ID_REQUIRED = "Id is mandatory";
         public static final String NAME_REQUIRED = "Name is mandatory";
+        public static final String ADDRESS_REQUIRED = "Address is mandatory";
+        public static final String TEL_REQUIRED = "Tel is mandatory";
     }
 }
