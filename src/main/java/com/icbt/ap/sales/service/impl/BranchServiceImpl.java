@@ -50,7 +50,7 @@ public class BranchServiceImpl implements BranchService {
         if (branch.getStatus() != null)
             branchById.setStatus(branch.getStatus());
 
-        branchRepository.update(branch);
+        branchRepository.update(branchById);
     }
 
     @Override

@@ -8,6 +8,7 @@ import com.icbt.ap.sales.dto.CommonResponseDTO;
 import com.icbt.ap.sales.dto.ContentResponseDTO;
 import com.icbt.ap.sales.entity.Branch;
 import com.icbt.ap.sales.enums.BranchStatus;
+import com.icbt.ap.sales.enums.BranchType;
 import com.icbt.ap.sales.exception.CustomServiceException;
 import com.icbt.ap.sales.service.BranchService;
 import lombok.RequiredArgsConstructor;
@@ -136,6 +137,7 @@ public class BranchController implements CommonController {
                 .name(request.getName())
                 .address(request.getAddress())
                 .tel(request.getTel())
+                .type(BranchType.BRANCH)
                 .status(BranchStatus.ACTIVE)
                 .build();
     }
