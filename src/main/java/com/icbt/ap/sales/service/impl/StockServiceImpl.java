@@ -1,0 +1,126 @@
+package com.icbt.ap.sales.service.impl;
+
+import com.icbt.ap.sales.controller.v1.model.request.StockQtyUpdateRequest;
+import com.icbt.ap.sales.entity.Branch;
+import com.icbt.ap.sales.entity.Product;
+import com.icbt.ap.sales.entity.Stock;
+import com.icbt.ap.sales.exception.CustomServiceException;
+import com.icbt.ap.sales.repository.StockRepository;
+import com.icbt.ap.sales.service.BranchService;
+import com.icbt.ap.sales.service.ProductService;
+import com.icbt.ap.sales.service.StockService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+/**
+ * @author Tharindu Eranga
+ * @date Wed 17 Feb 2021
+ */
+@Service
+@RequiredArgsConstructor
+@Slf4j
+public class StockServiceImpl implements StockService {
+
+    private final StockRepository stockRepository;
+
+    private final ProductService productService;
+    private final BranchService branchService;
+
+    @Override
+    public void add(Stock stock) {
+        /*checks whether the requested stock foreign table data exists*/
+        final Branch branch = branchService.getById(stock.getBranchId());
+        final Product product = productService.getById(stock.getProductId());
+
+        /*explicitly re-assigns the FK ids*/
+        stock.setBranchId(branch.getId());
+        stock.setProductId(product.getId());
+
+        stockRepository.save(stock);
+    }
+
+    @Override
+    public void update(Stock stock) {
+        /*validates the incoming data*/
+        final Stock stockById = getById(stock.getId());
+
+        stockById.setDescription(stock.getDescription());
+        stockById.setPrice(stock.getPrice());
+        stockById.setQty(stock.getQty());
+        /*checks and validates whether the foreign tables are requested to change*/
+        if (stock.getBranchId() != null) {
+            final Branch branch = branchService.getById(stock.getBranchId());
+            stockById.setBranchId(branch.getId());
+        }
+        if (stock.getProductId() != null) {
+            final Product product = productService.getById(stock.getProductId());
+            stock.setProductId(product.getId());
+        }
+
+        stockRepository.update(stockById);
+    }
+
+    @Override
+    public void delete(String id) {
+        final Stock stock = getById(id);
+        stockRepository.delete(stock.getId());
+    }
+
+    @Override
+    public Stock getById(String id) {
+        return stockRepository.findById(id).orElseThrow(() -> new CustomServiceException(
+                "error.validation.common.not.found.code",
+                "error.validation.stock.not.found.message"
+        ));
+    }
+
+    @Override
+    public List<Stock> getAll() {
+        return stockRepository.findAll();
+    }
+
+    @Override
+    public List<Stock> getAllByBranch(String branchId) {
+        return stockRepository.findAllByBranch(branchId);
+    }
+
+    @Override
+    public List<Stock> getAllByProduct(String productId) {
+        return stockRepository.findAllByProduct(productId);
+    }
+
+    /**
+     * @param qtyUpdateRequests the stock id and the qty that needs to increase/decrease from existing qty.
+     */
+    @Override
+    public void updateStockQty(List<StockQtyUpdateRequest> qtyUpdateRequests) {
+        final List<Stock> stockListByIds = stockRepository.findAllByIdsIn(qtyUpdateRequests
+                .stream()
+                .map(StockQtyUpdateRequest::getId)
+                .collect(Collectors.toList()));
+
+        /*filters and sets qty for the corresponding id*/
+        stockListByIds.forEach(stock -> {
+            final Optional<StockQtyUpdateRequest> updateRequestOptional = qtyUpdateRequests
+                    .stream()
+                    .filter(qtyUpdateRequest -> qtyUpdateRequest.getId().equals(stock.getId()))
+                    .findFirst();
+            if (updateRequestOptional.isEmpty()) return;
+
+            /*calculation is always a plus (+) operation,
+            therefore a qty decrease request should send minus values*/
+            stock.setQty(stock.getQty() + updateRequestOptional.get().getQty());
+        });
+        /*updates entire list*/
+        stockRepository.updateListQty(stockListByIds);
+    }
+
+    /*Internal functions below*/
+
+
+}

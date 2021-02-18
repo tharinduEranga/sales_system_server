@@ -20,5 +20,13 @@ public final class ApiConstant {
         public static final String NAME_REQUIRED = "Name is mandatory";
         public static final String ADDRESS_REQUIRED = "Address is mandatory";
         public static final String TEL_REQUIRED = "Tel is mandatory";
+        public static final String QTY_REQUIRED = "QTY is mandatory";
+        public static final String PRICE_REQUIRED = "Price is mandatory";
+        public static final String BRANCH_REQUIRED = "Branch is mandatory";
+        public static final String PRODUCT_REQUIRED = "Product is mandatory";
+
+        public static final String PATTERN_NUMBER = "^[0-9]*$";
+        public static final String PATTERN_DECIMAL = "\\d*\\.?\\d+";
+
     }
 }

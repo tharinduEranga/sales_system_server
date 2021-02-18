@@ -5,10 +5,12 @@ import com.icbt.ap.sales.repository.StockRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -76,6 +78,30 @@ public class StockRepositoryImpl implements StockRepository {
         String sql = "SELECT * FROM stock WHERE product_id = ?";
 
         return jdbcTemplate.query(sql, new StockRowMapper(), productId);
+    }
+
+    @Override
+    public List<Stock> findAllByIdsIn(List<String> stockIds) {
+        String sql = "SELECT * FROM stock WHERE id IN (?)";
+
+        return jdbcTemplate.query(sql, new StockRowMapper(), stockIds);
+
+    }
+
+    @Override
+    public void updateListQty(List<Stock> stocks) {
+        jdbcTemplate.batchUpdate("UPDATE stock SET qty = ? WHERE id = ? ",
+                new BatchPreparedStatementSetter() {
+                    public void setValues(PreparedStatement ps, int i)
+                            throws SQLException {
+                        ps.setInt(1, stocks.get(i).getQty());
+                        ps.setString(2, stocks.get(i).getId());
+                    }
+
+                    public int getBatchSize() {
+                        return stocks.size();
+                    }
+                });
     }
 
     private static class StockRowMapper implements RowMapper<Stock> {

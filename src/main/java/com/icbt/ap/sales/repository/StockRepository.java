@@ -13,4 +13,8 @@ public interface StockRepository extends CrudRepository<String, Stock> {
     List<Stock> findAllByBranch(String branchId);
 
     List<Stock> findAllByProduct(String productId);
+
+    List<Stock> findAllByIdsIn(List<String> stockIds);
+
+    void updateListQty(List<Stock> stocks);
 }
