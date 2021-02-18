@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -99,10 +100,14 @@ public class StockServiceImpl implements StockService {
      */
     @Override
     public void updateStockQty(List<StockQtyUpdateRequest> qtyUpdateRequests) {
-        final List<Stock> stockListByIds = stockRepository.findAllByIdsIn(qtyUpdateRequests
+        final List<String> stockIds = qtyUpdateRequests
                 .stream()
                 .map(StockQtyUpdateRequest::getId)
-                .collect(Collectors.toList()));
+                .collect(Collectors.toList());
+        final List<Stock> stockListByIds = stockRepository.findAllByIdsIn(stockIds);
+
+        /*validates whether all the requested ids are available in the result*/
+        validateStockReqAndResult(stockIds, stockListByIds);
 
         /*filters and sets qty for the corresponding id*/
         stockListByIds.forEach(stock -> {
@@ -121,6 +126,18 @@ public class StockServiceImpl implements StockService {
     }
 
     /*Internal functions below*/
+
+    private void validateStockReqAndResult(List<String> stockIdsReq, List<Stock> stocks) {
+        stockIdsReq.forEach(stockId -> {
+            if (stocks.stream().noneMatch(stock -> stock.getId().equals(stockId))) {
+                throw new CustomServiceException(
+                        "error.validation.common.not.found.code",
+                        "error.validation.stock.id.not.found.message",
+                        new String[]{stockId}
+                );
+            }
+        });
+    }
 
 
 }

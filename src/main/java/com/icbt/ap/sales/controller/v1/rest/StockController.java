@@ -1,7 +1,8 @@
 package com.icbt.ap.sales.controller.v1.rest;
 
 import com.icbt.ap.sales.controller.CommonController;
-import com.icbt.ap.sales.controller.v1.model.request.StockResponse;
+import com.icbt.ap.sales.controller.v1.model.request.StockQtyUpdateRequest;
+import com.icbt.ap.sales.controller.v1.model.response.StockResponse;
 import com.icbt.ap.sales.controller.v1.model.request.StockSaveRequest;
 import com.icbt.ap.sales.controller.v1.model.request.StockUpdateRequest;
 import com.icbt.ap.sales.dto.CommonResponseDTO;
@@ -71,6 +72,12 @@ public class StockController implements CommonController {
         return deleteStockTmp(branchId);
     }
 
+    @PutMapping(path = "/qty")
+    public ResponseEntity<CommonResponseDTO> updateStockQty(@Valid @RequestBody List<StockQtyUpdateRequest> request) {
+        log.info("Update stock qty, Stock details: {}", request);
+        return modifyStockQty(request);
+    }
+
 
     /*Internal functions*/
 
@@ -97,6 +104,14 @@ public class StockController implements CommonController {
         return new ResponseEntity<>(new CommonResponseDTO(true,
                 getCode("success.confirmation.common.updated.code"),
                 getMessage("success.confirmation.stock.updated.message")),
+                HttpStatus.OK);
+    }
+
+    private ResponseEntity<CommonResponseDTO> modifyStockQty(List<StockQtyUpdateRequest> request) {
+        stockService.updateStockQty(request);
+        return new ResponseEntity<>(new CommonResponseDTO(true,
+                getCode("success.confirmation.common.updated.code"),
+                getMessage("success.confirmation.stock.qty.updated.message")),
                 HttpStatus.OK);
     }
 

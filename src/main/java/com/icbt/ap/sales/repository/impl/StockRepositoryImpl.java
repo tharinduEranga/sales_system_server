@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -82,10 +83,10 @@ public class StockRepositoryImpl implements StockRepository {
 
     @Override
     public List<Stock> findAllByIdsIn(List<String> stockIds) {
-        String sql = "SELECT * FROM stock WHERE id IN (?)";
+        String sql = "SELECT * FROM stock WHERE id IN (%s)";
+        String inSql = String.join(",", Collections.nCopies(stockIds.size(), "?"));
 
-        return jdbcTemplate.query(sql, new StockRowMapper(), stockIds);
-
+        return jdbcTemplate.query(String.format(sql, inSql), new StockRowMapper(), stockIds.toArray());
     }
 
     @Override
