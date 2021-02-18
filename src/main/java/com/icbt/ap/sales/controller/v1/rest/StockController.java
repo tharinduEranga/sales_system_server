@@ -8,6 +8,7 @@ import com.icbt.ap.sales.controller.v1.model.request.StockUpdateRequest;
 import com.icbt.ap.sales.dto.CommonResponseDTO;
 import com.icbt.ap.sales.dto.ContentResponseDTO;
 import com.icbt.ap.sales.entity.Stock;
+import com.icbt.ap.sales.entity.query.StockResult;
 import com.icbt.ap.sales.service.StockService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -46,12 +47,26 @@ public class StockController implements CommonController {
         return getAllStocks();
     }
 
-    @GetMapping(path = "/{branchId}")
+    @GetMapping(path = "/{stockId}")
     public ResponseEntity<ContentResponseDTO<StockResponse>> getStock(
-            @PathVariable(name = "branchId") String branchId) {
+            @PathVariable(name = "stockId") String stockId) {
 
-        log.info("Get stock by id, Stock id: {}", branchId);
-        return getStockById(branchId);
+        log.info("Get stock by id, Stock id: {}", stockId);
+        return getStockById(stockId);
+    }
+
+    @GetMapping(path = "/branch/{branchId}")
+    public ResponseEntity<ContentResponseDTO<List<StockResponse>>> getStocksByBranch(
+            @PathVariable(name = "branchId") String branchId) {
+        log.info("Get all stocks");
+        return getAllStocksByBranch(branchId);
+    }
+
+    @GetMapping(path = "/product/{productId}")
+    public ResponseEntity<ContentResponseDTO<List<StockResponse>>> getStocksBtProduct(
+            @PathVariable(name = "productId") String productId) {
+        log.info("Get all stocks");
+        return getAllStocksByProduct(productId);
     }
 
     @PostMapping(path = "")
@@ -66,10 +81,10 @@ public class StockController implements CommonController {
         return modifyStock(request);
     }
 
-    @DeleteMapping(path = "/{branchId}")
-    public ResponseEntity<CommonResponseDTO> deleteStock(@PathVariable(name = "branchId") String branchId) {
-        log.info("Delete stock by id, Stock id: {}", branchId);
-        return deleteStockTmp(branchId);
+    @DeleteMapping(path = "/{stockId}")
+    public ResponseEntity<CommonResponseDTO> deleteStock(@PathVariable(name = "stockId") String stockId) {
+        log.info("Delete stock by id, Stock id: {}", stockId);
+        return deleteStockTmp(stockId);
     }
 
     @PutMapping(path = "/qty")
@@ -86,9 +101,19 @@ public class StockController implements CommonController {
                 getStockResponseList(stockService.getAll())));
     }
 
-    private ResponseEntity<ContentResponseDTO<StockResponse>> getStockById(String branchId) {
+    private ResponseEntity<ContentResponseDTO<StockResponse>> getStockById(String stockId) {
         return ResponseEntity.ok(new ContentResponseDTO<>(true,
-                getStockResponse(stockService.getById(branchId))));
+                getStockResponse(stockService.getById(stockId))));
+    }
+
+    private ResponseEntity<ContentResponseDTO<List<StockResponse>>> getAllStocksByBranch(String branchId) {
+        return ResponseEntity.ok(new ContentResponseDTO<>(true,
+                getStockResultResponseList(stockService.getAllByBranch(branchId))));
+    }
+
+    private ResponseEntity<ContentResponseDTO<List<StockResponse>>> getAllStocksByProduct(String productId) {
+        return ResponseEntity.ok(new ContentResponseDTO<>(true,
+                getStockResultResponseList(stockService.getAllByProduct(productId))));
     }
 
     private ResponseEntity<CommonResponseDTO> addNewStock(StockSaveRequest request) {
@@ -115,8 +140,8 @@ public class StockController implements CommonController {
                 HttpStatus.OK);
     }
 
-    private ResponseEntity<CommonResponseDTO> deleteStockTmp(String branchId) {
-        stockService.delete(branchId);
+    private ResponseEntity<CommonResponseDTO> deleteStockTmp(String stockId) {
+        stockService.delete(stockId);
         return new ResponseEntity<>(new CommonResponseDTO(true,
                 getCode("success.confirmation.common.updated.code"),
                 getMessage("success.confirmation.stock.deleted.message")),
@@ -139,6 +164,27 @@ public class StockController implements CommonController {
                 .branchId(stock.getBranchId())
                 .productId(stock.getProductId())
                 .createdAt(getFormattedDateTime(stock.getCreatedAt()))
+                .build();
+    }
+
+    private List<StockResponse> getStockResultResponseList(List<StockResult> stockResults) {
+        return stockResults
+                .stream()
+                .map(this::getStockResultResponse)
+                .collect(Collectors.toList());
+    }
+
+    private StockResponse getStockResultResponse(StockResult stockResult) {
+        return StockResponse.builder()
+                .id(stockResult.getId())
+                .description(stockResult.getDescription())
+                .qty(String.valueOf(stockResult.getQty()))
+                .price(getFormattedAmount(stockResult.getPrice()))
+                .branchId(stockResult.getBranchId())
+                .branchName(stockResult.getBranchName())
+                .productId(stockResult.getProductId())
+                .productName(stockResult.getProductName())
+                .createdAt(getFormattedDateTime(stockResult.getCreatedAt()))
                 .build();
     }
 

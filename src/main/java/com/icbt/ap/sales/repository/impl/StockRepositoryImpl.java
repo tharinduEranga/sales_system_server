@@ -1,6 +1,7 @@
 package com.icbt.ap.sales.repository.impl;
 
 import com.icbt.ap.sales.entity.Stock;
+import com.icbt.ap.sales.entity.query.StockResult;
 import com.icbt.ap.sales.repository.StockRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,19 +29,22 @@ public class StockRepositoryImpl implements StockRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
+    private static final String BRANCH_AND_PRODUCT_SELECT = "SELECT s.*, b.`name` AS branch_name, p.`name` AS product_name " +
+            "FROM stock s INNER JOIN product p on s.product_id = p.id INNER JOIN branch b on s.branch_id = b.id ";
+
     @Override
     public List<Stock> findAll() {
-        return jdbcTemplate.query("SELECT * FROM stock", new StockRowMapper());
+        return jdbcTemplate.query(BRANCH_AND_PRODUCT_SELECT, new StockRowMapper());
     }
 
     @Override
     public Optional<Stock> findById(String id) {
 
-        String sql = "SELECT * FROM stock WHERE id = ? ";
+        String sql = BRANCH_AND_PRODUCT_SELECT + " WHERE s.id = ? ";
 
         try {
             return Optional.ofNullable(jdbcTemplate
-                    .queryForObject(sql, new StockRowMapper(), id));
+                    .queryForObject(sql, new StockResultRowMapper(), id));
         } catch (EmptyResultDataAccessException ex) {
             return Optional.empty();
         }
@@ -67,18 +71,18 @@ public class StockRepositoryImpl implements StockRepository {
     }
 
     @Override
-    public List<Stock> findAllByBranch(String branchId) {
+    public List<StockResult> findAllByBranch(String branchId) {
 
-        String sql = "SELECT * FROM stock WHERE branch_id = ?";
+        String sql = BRANCH_AND_PRODUCT_SELECT + " WHERE s.branch_id = ?";
 
-        return jdbcTemplate.query(sql, new StockRowMapper(), branchId);
+        return jdbcTemplate.query(sql, new StockResultRowMapper(), branchId);
     }
 
     @Override
-    public List<Stock> findAllByProduct(String productId) {
-        String sql = "SELECT * FROM stock WHERE product_id = ?";
+    public List<StockResult> findAllByProduct(String productId) {
+        String sql = BRANCH_AND_PRODUCT_SELECT + " WHERE product_id = ?";
 
-        return jdbcTemplate.query(sql, new StockRowMapper(), productId);
+        return jdbcTemplate.query(sql, new StockResultRowMapper(), productId);
     }
 
     @Override
@@ -108,7 +112,7 @@ public class StockRepositoryImpl implements StockRepository {
     private static class StockRowMapper implements RowMapper<Stock> {
         @Override
         public Stock mapRow(ResultSet resultSet, int rowNum) throws SQLException {
-            return Stock.builder()
+            return StockResult.builder()
                     .id(resultSet.getString("id"))
                     .description(resultSet.getString("description"))
                     .qty(resultSet.getInt("qty"))
@@ -120,4 +124,20 @@ public class StockRepositoryImpl implements StockRepository {
         }
     }
 
+    private static class StockResultRowMapper implements RowMapper<StockResult> {
+        @Override
+        public StockResult mapRow(ResultSet resultSet, int rowNum) throws SQLException {
+            return StockResult.builder()
+                    .id(resultSet.getString("id"))
+                    .description(resultSet.getString("description"))
+                    .qty(resultSet.getInt("qty"))
+                    .price(resultSet.getBigDecimal("price"))
+                    .branchId(resultSet.getString("branch_id"))
+                    .branchName(resultSet.getString("branch_name"))
+                    .productId(resultSet.getString("product_id"))
+                    .productName(resultSet.getString("product_name"))
+                    .createdAt(resultSet.getTimestamp("created_at").toLocalDateTime())
+                    .build();
+        }
+    }
 }

@@ -3,6 +3,7 @@ package com.icbt.ap.sales.repository.impl;
 import com.icbt.ap.sales.entity.Branch;
 import com.icbt.ap.sales.entity.Product;
 import com.icbt.ap.sales.entity.Stock;
+import com.icbt.ap.sales.entity.query.StockResult;
 import com.icbt.ap.sales.repository.BranchRepository;
 import com.icbt.ap.sales.repository.ProductRepository;
 import com.icbt.ap.sales.repository.StockRepository;
@@ -123,7 +124,7 @@ class StockRepositoryImplTest {
         final Optional<Branch> optionalBranch = branchRepository.findById(branchId);
         assertTrue(optionalBranch.isPresent() && branchId.equals(optionalBranch.get().getId()));
 
-        final List<Stock> stocks = stockRepository.findAllByBranch(optionalBranch.get().getId());
+        final List<StockResult> stocks = stockRepository.findAllByBranch(optionalBranch.get().getId());
         assertTrue(stocks.stream().allMatch(stock -> stock.getBranchId().equals(branchId)));
     }
 
@@ -134,7 +135,7 @@ class StockRepositoryImplTest {
         final Optional<Product> optionalProduct = productRepository.findById(productId);
         assertTrue(optionalProduct.isPresent() && productId.equals(optionalProduct.get().getId()));
 
-        final List<Stock> stocks = stockRepository.findAllByProduct(optionalProduct.get().getId());
+        final List<StockResult> stocks = stockRepository.findAllByProduct(optionalProduct.get().getId());
         assertTrue(stocks.stream().allMatch(stock -> stock.getProductId().equals(productId)));
     }
 }

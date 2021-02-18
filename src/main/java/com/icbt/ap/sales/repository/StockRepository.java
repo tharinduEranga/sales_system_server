@@ -1,6 +1,7 @@
 package com.icbt.ap.sales.repository;
 
 import com.icbt.ap.sales.entity.Stock;
+import com.icbt.ap.sales.entity.query.StockResult;
 import com.icbt.ap.sales.repository.main.CrudRepository;
 
 import java.util.List;
@@ -10,9 +11,9 @@ import java.util.List;
  * @date Thu 18 Feb 2021
  */
 public interface StockRepository extends CrudRepository<String, Stock> {
-    List<Stock> findAllByBranch(String branchId);
+    List<StockResult> findAllByBranch(String branchId);
 
-    List<Stock> findAllByProduct(String productId);
+    List<StockResult> findAllByProduct(String productId);
 
     List<Stock> findAllByIdsIn(List<String> stockIds);
 

@@ -17,6 +17,8 @@ public class StockResponse {
     private String qty;
     private String price;
     private String branchId;
+    private String branchName;
     private String productId;
+    private String productName;
     private String createdAt;
 }

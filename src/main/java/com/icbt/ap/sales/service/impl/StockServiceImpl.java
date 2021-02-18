@@ -4,6 +4,7 @@ import com.icbt.ap.sales.controller.v1.model.request.StockQtyUpdateRequest;
 import com.icbt.ap.sales.entity.Branch;
 import com.icbt.ap.sales.entity.Product;
 import com.icbt.ap.sales.entity.Stock;
+import com.icbt.ap.sales.entity.query.StockResult;
 import com.icbt.ap.sales.exception.CustomServiceException;
 import com.icbt.ap.sales.repository.StockRepository;
 import com.icbt.ap.sales.service.BranchService;
@@ -86,12 +87,12 @@ public class StockServiceImpl implements StockService {
     }
 
     @Override
-    public List<Stock> getAllByBranch(String branchId) {
+    public List<StockResult> getAllByBranch(String branchId) {
         return stockRepository.findAllByBranch(branchId);
     }
 
     @Override
-    public List<Stock> getAllByProduct(String productId) {
+    public List<StockResult> getAllByProduct(String productId) {
         return stockRepository.findAllByProduct(productId);
     }
 
