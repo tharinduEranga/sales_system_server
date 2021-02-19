@@ -2,6 +2,8 @@ package com.icbt.ap.sales.repository.impl;
 
 import com.icbt.ap.sales.entity.Stock;
 import com.icbt.ap.sales.entity.query.StockResult;
+import com.icbt.ap.sales.enums.BranchStatus;
+import com.icbt.ap.sales.enums.ProductStatus;
 import com.icbt.ap.sales.repository.StockRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +32,8 @@ public class StockRepositoryImpl implements StockRepository {
     private final JdbcTemplate jdbcTemplate;
 
     private static final String BRANCH_AND_PRODUCT_SELECT = "SELECT s.*, b.`name` AS branch_name, p.`name` AS product_name " +
-            "FROM stock s INNER JOIN product p on s.product_id = p.id INNER JOIN branch b on s.branch_id = b.id ";
+            "FROM stock s INNER JOIN product p on s.product_id = p.id AND p.status = " + ProductStatus.ACTIVE.getId() + " " +
+            "INNER JOIN branch b on s.branch_id = b.id AND b.status = " + BranchStatus.ACTIVE.getId();
 
     @Override
     public List<Stock> findAll() {
