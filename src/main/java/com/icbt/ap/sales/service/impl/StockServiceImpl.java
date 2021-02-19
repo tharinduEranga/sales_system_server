@@ -105,10 +105,7 @@ public class StockServiceImpl implements StockService {
                 .stream()
                 .map(StockQtyUpdateRequest::getId)
                 .collect(Collectors.toList());
-        final List<Stock> stockListByIds = stockRepository.findAllByIdsIn(stockIds);
-
-        /*validates whether all the requested ids are available in the result*/
-        validateStockReqAndResult(stockIds, stockListByIds);
+        final List<Stock> stockListByIds = validateAndGetStocksByIds(stockIds);
 
         /*filters and sets qty for the corresponding id*/
         stockListByIds.forEach(stock -> {
@@ -124,6 +121,15 @@ public class StockServiceImpl implements StockService {
         });
         /*updates entire list*/
         stockRepository.updateListQty(stockListByIds);
+    }
+
+    @Override
+    public List<Stock> validateAndGetStocksByIds(List<String> stockIds) {
+        final List<Stock> stockListByIds = stockRepository.findAllByIdsIn(stockIds);
+
+        /*validates whether all the requested ids are available in the result*/
+        validateStockReqAndResult(stockIds, stockListByIds);
+        return stockListByIds;
     }
 
     /*Internal functions below*/

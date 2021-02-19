@@ -20,4 +20,6 @@ public interface StockService extends CrudService<String, Stock> {
     List<StockResult> getAllByProduct(String productId);
 
     void updateStockQty(List<StockQtyUpdateRequest> qtyUpdateRequests);
+
+    List<Stock> validateAndGetStocksByIds(List<String> stockIds);
 }

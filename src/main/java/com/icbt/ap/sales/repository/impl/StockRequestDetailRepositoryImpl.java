@@ -1,14 +1,17 @@
 package com.icbt.ap.sales.repository.impl;
 
+import com.icbt.ap.sales.entity.Stock;
 import com.icbt.ap.sales.entity.StockRequestDetail;
 import com.icbt.ap.sales.repository.StockRequestDetailRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -71,6 +74,24 @@ public class StockRequestDetailRepositoryImpl implements StockRequestDetailRepos
         String sql = STOCK_REQUEST_SELECT + " WHERE srd.stock_request_id = ?";
 
         return jdbcTemplate.query(sql, new StockRequestDetailRowMapper(), stockRequestId);
+    }
+
+    @Override
+    public void saveAll(List<StockRequestDetail> stocks) {
+        jdbcTemplate.batchUpdate("INSERT INTO stock_request_detail (`id`, `stock_request_id`, `stock_id`, `qty`) "
+                        + "VALUES (UUID(), ?, ?, ?)",
+                new BatchPreparedStatementSetter() {
+                    public void setValues(PreparedStatement ps, int i)
+                            throws SQLException {
+                        ps.setString(1, stocks.get(i).getStockRequestId());
+                        ps.setString(2, stocks.get(i).getStockId());
+                        ps.setInt(3, stocks.get(i).getQty());
+                    }
+
+                    public int getBatchSize() {
+                        return stocks.size();
+                    }
+                });
     }
 
     private static class StockRequestDetailRowMapper implements RowMapper<StockRequestDetail> {

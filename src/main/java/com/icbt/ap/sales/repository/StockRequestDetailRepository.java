@@ -11,4 +11,6 @@ import java.util.List;
  */
 public interface StockRequestDetailRepository extends CrudRepository<String, StockRequestDetail> {
     List<StockRequestDetail> findAllByStockRequest(String stockRequestId);
+
+    void saveAll(List<StockRequestDetail> stocks);
 }

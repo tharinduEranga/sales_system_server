@@ -10,8 +10,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -54,18 +57,33 @@ public class StockRequestRepositoryImpl implements StockRequestRepository {
     }
 
     @Override
-    public void save(StockRequest stock) {
+    public void save(StockRequest stockRequest) {
         jdbcTemplate.update("INSERT INTO stock_request (`id`, `by_branch_id`, `for_branch_id`, `vehicle_id`) "
                         + "VALUES (UUID(), ?, ?, ?)",
-                stock.getByBranchId(), stock.getForBranchId(), stock.getVehicleId());
+                stockRequest.getByBranchId(), stockRequest.getForBranchId(), stockRequest.getVehicleId());
     }
 
     @Override
-    public void update(StockRequest stock) {
+    public String saveAndGetId(StockRequest stockRequest) {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(connection -> {
+            PreparedStatement preparedStatement = connection
+                    .prepareStatement("INSERT INTO stock_request (`id`, `by_branch_id`, `for_branch_id`, `vehicle_id`) "
+                            + "VALUES (UUID(), ?, ?, ?)", new String[]{"id"});
+            preparedStatement.setString(1, stockRequest.getByBranchId());
+            preparedStatement.setString(2, stockRequest.getForBranchId());
+            preparedStatement.setString(3, stockRequest.getVehicleId());
+            return preparedStatement;
+        }, keyHolder);
+        return keyHolder.getKeyAs(String.class);
+    }
+
+    @Override
+    public void update(StockRequest stockRequest) {
         jdbcTemplate.update("UPDATE stock_request " + " SET by_branch_id = ?, for_branch_id = ?, vehicle_id = ? " +
                         " WHERE id = ?",
-                stock.getByBranchId(), stock.getForBranchId(), stock.getVehicleId(),
-                stock.getId());
+                stockRequest.getByBranchId(), stockRequest.getForBranchId(), stockRequest.getVehicleId(),
+                stockRequest.getId());
     }
 
     @Override

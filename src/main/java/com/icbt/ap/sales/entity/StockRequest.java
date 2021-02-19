@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * @author Tharindu Eranga
@@ -23,4 +24,6 @@ public class StockRequest {
     private String byBranchId;
     private String forBranchId;
     private String vehicleId;
+    /*Child tables*/
+    private List<StockRequestDetail> stockRequestDetails;
 }
