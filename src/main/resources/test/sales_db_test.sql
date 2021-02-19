@@ -17,6 +17,9 @@ SET MODE MySQL;
 -- ----------------------------
 -- Table structure for product
 -- ----------------------------
+DROP TABLE IF EXISTS `stock_request_detail`;
+DROP TABLE IF EXISTS `stock_request`;
+DROP TABLE IF EXISTS `vehicle`;
 DROP TABLE IF EXISTS `stock`;
 DROP TABLE IF EXISTS `branch`;
 DROP TABLE IF EXISTS `product`;
@@ -66,6 +69,74 @@ CREATE TABLE `stock`
         ON DELETE CASCADE
         ON UPDATE CASCADE
 );
+
+-- ----------------------------
+-- Table structure for vehicle
+-- ----------------------------
+CREATE TABLE `vehicle`
+(
+    `id`         varchar(255) NOT NULL PRIMARY KEY,
+    `reg_no`     varchar(255) NOT NULL,
+    `driver_id`  varchar(255)          DEFAULT NULL,
+    `branch_id`  varchar(255) NOT NULL,
+    `created_at` timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    INDEX veh_bra_ind (branch_id),
+    FOREIGN KEY (branch_id)
+        REFERENCES branch (id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+);
+
+-- ----------------------------
+-- Table structure for stock_request
+-- ----------------------------
+CREATE TABLE `stock_request`
+(
+    `id`            varchar(255) NOT NULL PRIMARY KEY,
+    `status`        int(10)      NOT NULL DEFAULT 1,
+    `by_branch_id`  varchar(255) NOT NULL,
+    `for_branch_id` varchar(255) NOT NULL,
+    `vehicle_id`    varchar(255) NOT NULL,
+    `created_at`    timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `updated_at`    timestamp    NULL     DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+    INDEX str_by_bra_ind (by_branch_id),
+    FOREIGN KEY (by_branch_id)
+        REFERENCES branch (id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+    INDEX str_for_bra_ind (for_branch_id),
+    FOREIGN KEY (for_branch_id)
+        REFERENCES branch (id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+    INDEX str_veh_ind (vehicle_id),
+    FOREIGN KEY (vehicle_id)
+        REFERENCES vehicle (id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+);
+
+-- ----------------------------
+-- Table structure for stock_request_detail
+-- ----------------------------
+CREATE TABLE `stock_request_detail`
+(
+    `id`               varchar(255) NOT NULL PRIMARY KEY,
+    `qty`              int(255)     NOT NULL DEFAULT 0,
+    `stock_request_id` varchar(255) NOT NULL,
+    `stock_id`         varchar(255) NOT NULL,
+    INDEX strd_str_ind (stock_request_id),
+    FOREIGN KEY (stock_request_id)
+        REFERENCES stock_request (id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+    INDEX strd_st_ind (stock_id),
+    FOREIGN KEY (stock_id)
+        REFERENCES stock (id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+);
+
 -- ----------------------------
 -- Records of product
 -- ----------------------------
@@ -93,5 +164,17 @@ INSERT INTO `stock` (`id`, `description`, `qty`, `price`, `branch_id`, `product_
 VALUES ('643344fregt4t', 'Test', 10, 0.00, '43242324',
         '12cbc2ca-69d8-11eb-8f8a-a81e849e9ba2', '2021-02-18 09:01:03');
 
+-- ----------------------------
+-- Records of vehicle
+-- ----------------------------
+INSERT INTO `vehicle` (`id`, `reg_no`, `driver_id`, `branch_id`, `created_at`)
+VALUES ('43432', 'HF-1232', 'D001', '43242324', '2021-02-19 20:55:52');
+
+-- ----------------------------
+-- Records of stock_request
+-- ----------------------------
+INSERT INTO `stock_request` (`id`, `status`, `by_branch_id`, `for_branch_id`, `vehicle_id`, `created_at`, `updated_at`)
+VALUES ('fer324324', 1, '323432', '43242324', '43432',
+        '2021-02-19 20:51:39', null);
 
 
