@@ -10,7 +10,5 @@ import java.util.List;
  * @date Fri 19 Feb 2021
  */
 public interface StockRequestDetailRepository extends CrudRepository<String, StockRequestDetail> {
-    List<StockRequestDetail> findAllByRequestByBranch(String byBranchId);
-
-    List<StockRequestDetail> findAllByRequestToBranch(String toBranchId);
+    List<StockRequestDetail> findAllByStockRequest(String stockRequestId);
 }

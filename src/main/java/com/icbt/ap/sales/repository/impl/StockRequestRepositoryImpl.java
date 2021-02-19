@@ -28,7 +28,7 @@ public class StockRequestRepositoryImpl implements StockRequestRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    private static final String BRANCH_AND_PRODUCT_SELECT = "SELECT sr.*, v.`reg_no` AS vehicle_reg, " +
+    private static final String STOCK_REQUEST_STOCK_BRANCH = "SELECT sr.*, v.`reg_no` AS vehicle_reg, " +
             "bb.`name` AS by_branch_name, fb.`name` AS for_branch_name, " +
             "FROM stock_request sr " +
             "INNER JOIN branch bb on sr.by_branch_id = bb.id AND bb.status = " + BranchStatus.ACTIVE.getId() + " " +
@@ -37,13 +37,13 @@ public class StockRequestRepositoryImpl implements StockRequestRepository {
 
     @Override
     public List<StockRequest> findAll() {
-        return jdbcTemplate.query(BRANCH_AND_PRODUCT_SELECT, new StockRequestRowMapper());
+        return jdbcTemplate.query(STOCK_REQUEST_STOCK_BRANCH, new StockRequestRowMapper());
     }
 
     @Override
     public Optional<StockRequest> findById(String id) {
 
-        String sql = BRANCH_AND_PRODUCT_SELECT + " WHERE sr.id = ? ";
+        String sql = STOCK_REQUEST_STOCK_BRANCH + " WHERE sr.id = ? ";
 
         try {
             return Optional.ofNullable(jdbcTemplate
@@ -83,7 +83,7 @@ public class StockRequestRepositoryImpl implements StockRequestRepository {
     @Override
     public List<StockRequestResult> findAllByRequestByBranch(String byBranchId) {
 
-        String sql = BRANCH_AND_PRODUCT_SELECT + " WHERE sr.by_branch_id = ?";
+        String sql = STOCK_REQUEST_STOCK_BRANCH + " WHERE sr.by_branch_id = ?";
 
         return jdbcTemplate.query(sql, new StockRequestResultRowMapper(), byBranchId);
     }
@@ -91,7 +91,7 @@ public class StockRequestRepositoryImpl implements StockRequestRepository {
     @Override
     public List<StockRequestResult> findAllByRequestToBranch(String toBranchId) {
 
-        String sql = BRANCH_AND_PRODUCT_SELECT + " WHERE sr.for_branch_id = ?";
+        String sql = STOCK_REQUEST_STOCK_BRANCH + " WHERE sr.for_branch_id = ?";
 
         return jdbcTemplate.query(sql, new StockRequestResultRowMapper(), toBranchId);
     }

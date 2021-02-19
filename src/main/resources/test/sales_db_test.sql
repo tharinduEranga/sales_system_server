@@ -177,4 +177,9 @@ INSERT INTO `stock_request` (`id`, `status`, `by_branch_id`, `for_branch_id`, `v
 VALUES ('fer324324', 1, '323432', '43242324', '43432',
         '2021-02-19 20:51:39', null);
 
+-- ----------------------------
+-- Records of stock_request_detail
+-- ----------------------------
+INSERT INTO `stock_request_detail` (`id`, `qty`, `stock_request_id`, `stock_id`)
+VALUES ('1212', 10, 'fer324324', '643344fregt4t');
 
