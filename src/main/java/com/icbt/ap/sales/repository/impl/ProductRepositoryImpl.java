@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -74,6 +75,14 @@ public class ProductRepositoryImpl implements ProductRepository {
         } catch (EmptyResultDataAccessException ex) {
             return null;
         }
+    }
+
+    @Override
+    public List<Product> findAllByIdsIn(List<String> productIds) {
+        String sql = "SELECT * FROM product WHERE id IN (%s)";
+        String inSql = String.join(",", Collections.nCopies(productIds.size(), "?"));
+
+        return jdbcTemplate.query(String.format(sql, inSql), new ProductRowMapper(), productIds.toArray());
     }
 
     private static class ProductRowMapper implements RowMapper<Product> {

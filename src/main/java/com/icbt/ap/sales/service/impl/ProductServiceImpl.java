@@ -63,8 +63,29 @@ public class ProductServiceImpl implements ProductService {
         return productRepository.findAll();
     }
 
+    @Override
+    public List<Product> validateAndGetProductsByIds(List<String> productIds) {
+        final List<Product> productListByIds = productRepository.findAllByIdsIn(productIds);
+
+        /*validates whether all the requested ids are available in the result*/
+        validateStockReqAndResult(productIds, productListByIds);
+        return productListByIds;
+    }
+
 
     /*Internal functions below*/
+
+    private void validateStockReqAndResult(List<String> productIdsReq, List<Product> products) {
+        productIdsReq.forEach(productId -> {
+            if (products.stream().noneMatch(product -> product.getId().equals(productId))) {
+                throw new CustomServiceException(
+                        "error.validation.common.not.found.code",
+                        "error.validation.product.id.not.found.message",
+                        new String[]{productId}
+                );
+            }
+        });
+    }
 
     private void throwProductAlreadyExistException() {
         throw new CustomServiceException(

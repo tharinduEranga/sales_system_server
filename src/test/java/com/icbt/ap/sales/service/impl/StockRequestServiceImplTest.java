@@ -66,7 +66,8 @@ class StockRequestServiceImplTest {
         productService = new ProductServiceImpl(new ProductRepositoryImpl(jdbcTemplate));
         stockService = new StockServiceImpl(stockRepository, productService, branchService);
         stockRequestService = new StockRequestServiceImpl(stockRequestRepository, stockRequestDetailRepository,
-                vehicleRepository, branchRepository, stockRepository, branchService, vehicleService, stockService);
+                vehicleRepository, branchRepository, stockRepository, branchService, vehicleService, stockService,
+                productService);
     }
 
     @Test
@@ -74,14 +75,14 @@ class StockRequestServiceImplTest {
         String byBranchId = "323432";
         String forBranchId = "43242324";
         String vehicleId = "43432";
-        String stockId = "643344fregt4t";
+        String productId = "12cbc2ca-69d8-11eb-8f8a-a81e849e9ba1";
 
         StockRequestDetail stockRequestDetail = StockRequestDetail.builder()
-                .stockId(stockId)
+                .productId(productId)
                 .qty(10)
                 .build();
         StockRequestDetail stockRequestDetail2 = StockRequestDetail.builder()
-                .stockId(stockId)
+                .productId(productId)
                 .qty(20)
                 .build();
 

@@ -124,15 +124,15 @@ CREATE TABLE `stock_request_detail`
     `id`               varchar(255) NOT NULL PRIMARY KEY,
     `qty`              int(255)     NOT NULL DEFAULT 0,
     `stock_request_id` varchar(255) NOT NULL,
-    `stock_id`         varchar(255) NOT NULL,
+    `product_id`       varchar(255) NOT NULL,
     INDEX strd_str_ind (stock_request_id),
     FOREIGN KEY (stock_request_id)
         REFERENCES stock_request (id)
         ON DELETE CASCADE
         ON UPDATE CASCADE,
-    INDEX strd_st_ind (stock_id),
-    FOREIGN KEY (stock_id)
-        REFERENCES stock (id)
+    INDEX strd_pro_ind (product_id),
+    FOREIGN KEY (product_id)
+        REFERENCES product (id)
         ON DELETE CASCADE
         ON UPDATE CASCADE
 );
@@ -180,6 +180,7 @@ VALUES ('fer324324', 1, '323432', '43242324', '43432',
 -- ----------------------------
 -- Records of stock_request_detail
 -- ----------------------------
-INSERT INTO `stock_request_detail` (`id`, `qty`, `stock_request_id`, `stock_id`)
-VALUES ('1212', 10, 'fer324324', '643344fregt4t');
-
+INSERT INTO `stock_request_detail` (`id`, `qty`, `stock_request_id`, `product_id`)
+VALUES ('1212', 10, 'fer324324', '12cbc2ca-69d8-11eb-8f8a-a81e849e9ba1');
+INSERT INTO `stock_request_detail` (`id`, `qty`, `stock_request_id`, `product_id`)
+VALUES ('4213', 30, 'fer324324', '12cbc2ca-69d8-11eb-8f8a-a81e849e9ba2');

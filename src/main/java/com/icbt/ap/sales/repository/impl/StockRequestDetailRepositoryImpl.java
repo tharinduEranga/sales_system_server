@@ -1,6 +1,5 @@
 package com.icbt.ap.sales.repository.impl;
 
-import com.icbt.ap.sales.entity.Stock;
 import com.icbt.ap.sales.entity.StockRequestDetail;
 import com.icbt.ap.sales.repository.StockRequestDetailRepository;
 import lombok.RequiredArgsConstructor;
@@ -50,16 +49,16 @@ public class StockRequestDetailRepositoryImpl implements StockRequestDetailRepos
 
     @Override
     public void save(StockRequestDetail stockRequestDetail) {
-        jdbcTemplate.update("INSERT INTO stock_request_detail (`id`, `stock_request_id`, `stock_id`, `qty`) "
+        jdbcTemplate.update("INSERT INTO stock_request_detail (`id`, `stock_request_id`, `product_id`, `qty`) "
                         + "VALUES (UUID(), ?, ?, ?)",
-                stockRequestDetail.getStockRequestId(), stockRequestDetail.getStockId(), stockRequestDetail.getQty());
+                stockRequestDetail.getStockRequestId(), stockRequestDetail.getProductId(), stockRequestDetail.getQty());
     }
 
     @Override
     public void update(StockRequestDetail stockRequestDetail) {
-        jdbcTemplate.update("UPDATE stock_request_detail " + " SET stock_request_id = ?, stock_id = ?, qty = ? " +
+        jdbcTemplate.update("UPDATE stock_request_detail " + " SET stock_request_id = ?, product_id = ?, qty = ? " +
                         " WHERE id = ?",
-                stockRequestDetail.getStockRequestId(), stockRequestDetail.getStockId(), stockRequestDetail.getQty(),
+                stockRequestDetail.getStockRequestId(), stockRequestDetail.getProductId(), stockRequestDetail.getQty(),
                 stockRequestDetail.getId());
     }
 
@@ -78,13 +77,13 @@ public class StockRequestDetailRepositoryImpl implements StockRequestDetailRepos
 
     @Override
     public void saveAll(List<StockRequestDetail> stocks) {
-        jdbcTemplate.batchUpdate("INSERT INTO stock_request_detail (`id`, `stock_request_id`, `stock_id`, `qty`) "
+        jdbcTemplate.batchUpdate("INSERT INTO stock_request_detail (`id`, `stock_request_id`, `product_id`, `qty`) "
                         + "VALUES (UUID(), ?, ?, ?)",
                 new BatchPreparedStatementSetter() {
                     public void setValues(PreparedStatement ps, int i)
                             throws SQLException {
                         ps.setString(1, stocks.get(i).getStockRequestId());
-                        ps.setString(2, stocks.get(i).getStockId());
+                        ps.setString(2, stocks.get(i).getProductId());
                         ps.setInt(3, stocks.get(i).getQty());
                     }
 
@@ -100,7 +99,7 @@ public class StockRequestDetailRepositoryImpl implements StockRequestDetailRepos
             return StockRequestDetail.builder()
                     .id(resultSet.getString("id"))
                     .stockRequestId(resultSet.getString("stock_request_id"))
-                    .stockId(resultSet.getString("stock_id"))
+                    .productId(resultSet.getString("product_id"))
                     .qty(resultSet.getInt("qty"))
                     .build();
         }

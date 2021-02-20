@@ -4,10 +4,7 @@ import com.icbt.ap.sales.entity.*;
 import com.icbt.ap.sales.entity.query.StockRequestResult;
 import com.icbt.ap.sales.exception.CustomServiceException;
 import com.icbt.ap.sales.repository.*;
-import com.icbt.ap.sales.service.BranchService;
-import com.icbt.ap.sales.service.StockRequestService;
-import com.icbt.ap.sales.service.StockService;
-import com.icbt.ap.sales.service.VehicleService;
+import com.icbt.ap.sales.service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -34,6 +31,7 @@ public class StockRequestServiceImpl implements StockRequestService {
     private final BranchService branchService;
     private final VehicleService vehicleService;
     private final StockService stockService;
+    private final ProductService productService;
 
     @Transactional
     @Override
@@ -103,10 +101,10 @@ public class StockRequestServiceImpl implements StockRequestService {
     }
 
     private void validateStockDetailsRequest(List<StockRequestDetail> stockRequestDetails) {
-        final List<String> stockIdList = stockRequestDetails
+        final List<String> productIdList = stockRequestDetails
                 .stream()
-                .map(StockRequestDetail::getStockId)
+                .map(StockRequestDetail::getProductId)
                 .collect(Collectors.toList());
-        stockService.validateAndGetStocksByIds(stockIdList);
+        productService.validateAndGetProductsByIds(productIdList);
     }
 }

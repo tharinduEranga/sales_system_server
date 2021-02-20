@@ -16,5 +16,5 @@ public class StockRequestDetail {
     private Integer qty;
     /*FKs*/
     private String stockRequestId;
-    private String stockId;
+    private String productId;
 }
