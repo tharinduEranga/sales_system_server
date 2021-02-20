@@ -5,13 +5,12 @@ import com.icbt.ap.sales.entity.query.StockRequestResult;
 import com.icbt.ap.sales.enums.BranchStatus;
 import com.icbt.ap.sales.enums.StockRequestStatus;
 import com.icbt.ap.sales.repository.StockRequestRepository;
+import com.icbt.ap.sales.util.StringUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
@@ -19,6 +18,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * @author Tharindu Eranga
@@ -32,11 +32,11 @@ public class StockRequestRepositoryImpl implements StockRequestRepository {
     private final JdbcTemplate jdbcTemplate;
 
     private static final String STOCK_REQUEST_STOCK_BRANCH = "SELECT sr.*, v.`reg_no` AS vehicle_reg, " +
-            "bb.`name` AS by_branch_name, fb.`name` AS for_branch_name, " +
+            "bb.`name` AS by_branch_name, fb.`name` AS for_branch_name " +
             "FROM stock_request sr " +
             "INNER JOIN branch bb on sr.by_branch_id = bb.id AND bb.status = " + BranchStatus.ACTIVE.getId() + " " +
             "INNER JOIN branch fb on sr.for_branch_id = fb.id AND fb.status = " + BranchStatus.ACTIVE.getId() + " " +
-            "INNER JOIN vehicle v on sr.vehicle_id = v.id ";
+            "LEFT JOIN vehicle v on sr.vehicle_id = v.id ";
 
     @Override
     public List<StockRequest> findAll() {
@@ -65,17 +65,23 @@ public class StockRequestRepositoryImpl implements StockRequestRepository {
 
     @Override
     public String saveAndGetId(StockRequest stockRequest) {
-        KeyHolder keyHolder = new GeneratedKeyHolder();
+        final String insertId = UUID.randomUUID().toString();
         jdbcTemplate.update(connection -> {
+
             PreparedStatement preparedStatement = connection
                     .prepareStatement("INSERT INTO stock_request (`id`, `by_branch_id`, `for_branch_id`, `vehicle_id`) "
-                            + "VALUES (UUID(), ?, ?, ?)", new String[]{"id"});
-            preparedStatement.setString(1, stockRequest.getByBranchId());
-            preparedStatement.setString(2, stockRequest.getForBranchId());
-            preparedStatement.setString(3, stockRequest.getVehicleId());
+                            + "VALUES (?, ?, ?, ?)", new String[]{"id"});
+
+            preparedStatement.setString(1, insertId);
+            preparedStatement.setString(2, stockRequest.getByBranchId());
+            preparedStatement.setString(3, stockRequest.getForBranchId());
+            preparedStatement.setString(4, StringUtil.isNotBlank(stockRequest.getVehicleId()) ?
+                    stockRequest.getVehicleId() : null);
+
             return preparedStatement;
-        }, keyHolder);
-        return keyHolder.getKeyAs(String.class);
+
+        });
+        return insertId;
     }
 
     @Override

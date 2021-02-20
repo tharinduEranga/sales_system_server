@@ -93,10 +93,10 @@ CREATE TABLE `vehicle`
 CREATE TABLE `stock_request`
 (
     `id`            varchar(255) NOT NULL PRIMARY KEY,
-    `status`        int(10)      NOT NULL DEFAULT 1,
+    `status`        int(10)      NOT NULL DEFAULT 0,
     `by_branch_id`  varchar(255) NOT NULL,
     `for_branch_id` varchar(255) NOT NULL,
-    `vehicle_id`    varchar(255) NOT NULL,
+    `vehicle_id`    varchar(255)          DEFAULT NULL,
     `created_at`    timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at`    timestamp    NULL     DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
     INDEX str_by_bra_ind (by_branch_id),

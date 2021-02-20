@@ -5,6 +5,7 @@ import com.icbt.ap.sales.entity.query.StockRequestResult;
 import com.icbt.ap.sales.exception.CustomServiceException;
 import com.icbt.ap.sales.repository.*;
 import com.icbt.ap.sales.service.*;
+import com.icbt.ap.sales.util.StringUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -91,12 +92,13 @@ public class StockRequestServiceImpl implements StockRequestService {
         /*checks whether the requested branches and vehicle exist*/
         final Branch byBranch = branchService.getById(stockRequest.getByBranchId());
         final Branch forBranch = branchService.getById(stockRequest.getForBranchId());
-        final Vehicle vehicle = vehicleService.getById(stockRequest.getVehicleId());
-
+        if (StringUtil.isNotBlank(stockRequest.getVehicleId())) {
+            final Vehicle vehicle = vehicleService.getById(stockRequest.getVehicleId());
+            stockRequest.setVehicleId(vehicle.getId());
+        }
         /*explicitly sets IDs*/
         stockRequest.setByBranchId(byBranch.getId());
         stockRequest.setForBranchId(forBranch.getId());
-        stockRequest.setVehicleId(vehicle.getId());
         validateStockDetailsRequest(stockRequest.getStockRequestDetails());
     }
 

@@ -1,0 +1,179 @@
+package com.icbt.ap.sales.controller.v1.rest;
+
+import com.icbt.ap.sales.controller.CommonController;
+import com.icbt.ap.sales.controller.v1.model.request.StockRequestDetailRequest;
+import com.icbt.ap.sales.controller.v1.model.request.StockRequestMakeRequest;
+import com.icbt.ap.sales.controller.v1.model.request.StockRequestUpdateRequest;
+import com.icbt.ap.sales.controller.v1.model.response.StockRequestResponse;
+import com.icbt.ap.sales.dto.CommonResponseDTO;
+import com.icbt.ap.sales.dto.ContentResponseDTO;
+import com.icbt.ap.sales.entity.StockRequest;
+import com.icbt.ap.sales.entity.StockRequestDetail;
+import com.icbt.ap.sales.service.StockRequestService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.MessageSource;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Locale;
+import java.util.stream.Collectors;
+
+import static com.icbt.ap.sales.controller.v1.util.ApiConstant.DATE_TIME_FORMATTER;
+import static com.icbt.ap.sales.controller.v1.util.ApiConstant.VERSION;
+
+/**
+ * @author Tharindu Eranga
+ * @date Sat 20 Feb 2021
+ */
+@RestController
+@RequestMapping(value = VERSION + "/stock-request")
+@Slf4j
+@RequiredArgsConstructor
+public class StockRequestController implements CommonController {
+
+    private final StockRequestService stockRequestService;
+
+    private final MessageSource messageSource;
+
+    @GetMapping(path = "")
+    public ResponseEntity<ContentResponseDTO<List<StockRequestResponse>>> getStockRequests() {
+        log.info("Get all stock requests");
+        return getAllStockRequests();
+    }
+
+    @GetMapping(path = "/{stockRequestId}")
+    public ResponseEntity<ContentResponseDTO<StockRequestResponse>> getStockRequest(
+            @PathVariable(name = "stockRequestId") String stockRequestId) {
+
+        log.info("Get stock request by id, StockRequest id: {}", stockRequestId);
+        return getStockRequestById(stockRequestId);
+    }
+
+    @PostMapping(path = "")
+    public ResponseEntity<CommonResponseDTO> saveStockRequest(@Valid @RequestBody StockRequestMakeRequest request) {
+        log.info("Add new stock request, StockRequest: {}", request);
+        return addNewStockRequest(request);
+    }
+
+    @PutMapping(path = "")
+    public ResponseEntity<CommonResponseDTO> updateStockRequest(@Valid @RequestBody StockRequestUpdateRequest request) {
+        log.info("Update stock request, StockRequest: {}", request);
+        return modifyStockRequest(request);
+    }
+
+    @DeleteMapping(path = "/{stockRequestId}")
+    public ResponseEntity<CommonResponseDTO> deleteStockRequest(
+            @PathVariable(name = "stockRequestId") String stockRequestId) {
+        log.info("Delete stock request by id, StockRequest id: {}", stockRequestId);
+        return deleteStockRequestTmp(stockRequestId);
+    }
+
+
+    /*Internal functions*/
+
+    private ResponseEntity<ContentResponseDTO<List<StockRequestResponse>>> getAllStockRequests() {
+        return ResponseEntity.ok(new ContentResponseDTO<>(true,
+                getStockRequestResponseList(stockRequestService.getAll())));
+    }
+
+    private ResponseEntity<ContentResponseDTO<StockRequestResponse>> getStockRequestById(String stockRequestId) {
+        return ResponseEntity.ok(new ContentResponseDTO<>(true,
+                getStockRequestResponse(stockRequestService.getById(stockRequestId))));
+    }
+
+    private ResponseEntity<CommonResponseDTO> addNewStockRequest(StockRequestMakeRequest request) {
+        stockRequestService.add(getStockRequestSaveEntity(request));
+        return new ResponseEntity<>(new CommonResponseDTO(true,
+                getCode("success.confirmation.common.added.code"),
+                getMessage("success.confirmation.stock.request.added.message")),
+                HttpStatus.CREATED);
+    }
+
+    private ResponseEntity<CommonResponseDTO> modifyStockRequest(StockRequestUpdateRequest request) {
+        stockRequestService.update(getStockRequestUpdateEntity(request));
+        return new ResponseEntity<>(new CommonResponseDTO(true,
+                getCode("success.confirmation.common.updated.code"),
+                getMessage("success.confirmation.stock.request.updated.message")),
+                HttpStatus.OK);
+    }
+
+    private ResponseEntity<CommonResponseDTO> deleteStockRequestTmp(String stockRequestId) {
+        stockRequestService.delete(stockRequestId);
+        return new ResponseEntity<>(new CommonResponseDTO(true,
+                getCode("success.confirmation.common.updated.code"),
+                getMessage("success.confirmation.stock.request.deleted.message")),
+                HttpStatus.OK);
+    }
+
+    private List<StockRequestResponse> getStockRequestResponseList(List<StockRequest> stockrequests) {
+        return stockrequests
+                .stream()
+                .map(this::getStockRequestResponse)
+                .collect(Collectors.toList());
+    }
+
+    private StockRequestResponse getStockRequestResponse(StockRequest stockRequest) {
+        return StockRequestResponse.builder()
+                .id(stockRequest.getId())
+                .byBranchId(stockRequest.getByBranchId())
+                .forBranchId(stockRequest.getForBranchId())
+                .vehicleId(stockRequest.getVehicleId())
+                .byBranchName(stockRequest.getByBranchId())
+                .forBranchName(stockRequest.getForBranchId())
+                .vehicleReg(stockRequest.getVehicleId())
+                .status(stockRequest.getStatus().getDescription())
+                .createdAt(getFormattedDateTime(stockRequest.getCreatedAt()))
+                .updatedAt(getFormattedDateTime(stockRequest.getUpdatedAt()))
+                .build();
+    }
+
+    private StockRequest getStockRequestSaveEntity(StockRequestMakeRequest request) {
+        return StockRequest.builder()
+                .byBranchId(request.getByBranchId())
+                .forBranchId(request.getForBranchId())
+                .vehicleId(request.getVehicleId())
+                .stockRequestDetails(request.getStockRequestDetails()
+                        .stream()
+                        .map(this::getStockRequestDetailEntity)
+                        .collect(Collectors.toList()))
+                .build();
+    }
+
+    private StockRequest getStockRequestUpdateEntity(StockRequestUpdateRequest request) {
+        return StockRequest.builder()
+                .id(request.getId())
+                .byBranchId(request.getByBranchId())
+                .forBranchId(request.getForBranchId())
+                .vehicleId(request.getVehicleId())
+                .stockRequestDetails(request.getStockRequestDetails()
+                        .stream()
+                        .map(this::getStockRequestDetailEntity)
+                        .collect(Collectors.toList()))
+                .build();
+    }
+
+    private StockRequestDetail getStockRequestDetailEntity(StockRequestDetailRequest request) {
+        return StockRequestDetail.builder()
+                .id(request.getId())
+                .productId(request.getProductId())
+                .qty(request.getQty())
+                .build();
+    }
+
+    private String getFormattedDateTime(LocalDateTime dateTime) {
+        return dateTime != null ? DATE_TIME_FORMATTER.format(dateTime) : null;
+    }
+
+    private String getCode(String key) {
+        return messageSource.getMessage(key, new Object[0], Locale.getDefault());
+    }
+
+    private String getMessage(String key) {
+        return messageSource.getMessage(key, new Object[0], Locale.getDefault());
+    }
+}
