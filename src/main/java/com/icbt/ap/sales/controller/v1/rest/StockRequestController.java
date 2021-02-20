@@ -9,6 +9,7 @@ import com.icbt.ap.sales.dto.CommonResponseDTO;
 import com.icbt.ap.sales.dto.ContentResponseDTO;
 import com.icbt.ap.sales.entity.StockRequest;
 import com.icbt.ap.sales.entity.StockRequestDetail;
+import com.icbt.ap.sales.entity.query.StockRequestResult;
 import com.icbt.ap.sales.service.StockRequestService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -73,6 +74,19 @@ public class StockRequestController implements CommonController {
         return deleteStockRequestTmp(stockRequestId);
     }
 
+    @GetMapping(path = "/by-branch/{branchId}")
+    public ResponseEntity<ContentResponseDTO<List<StockRequestResponse>>> getAllByRequestedByBranch(
+            @PathVariable(name = "branchId") String branchId) {
+        log.info("Get all stock requests by-branch: {}", branchId);
+        return getAllStockRequestsByBranch(branchId);
+    }
+
+    @GetMapping(path = "/for-branch/{branchId}")
+    public ResponseEntity<ContentResponseDTO<List<StockRequestResponse>>> getAllByRequestedForBranch(
+            @PathVariable(name = "branchId") String branchId) {
+        log.info("Get all stock requests for-branch: {}", branchId);
+        return getAllStockRequestsForBranch(branchId);
+    }
 
     /*Internal functions*/
 
@@ -110,8 +124,25 @@ public class StockRequestController implements CommonController {
                 HttpStatus.OK);
     }
 
+    private ResponseEntity<ContentResponseDTO<List<StockRequestResponse>>> getAllStockRequestsByBranch(String branchId) {
+        return ResponseEntity.ok(new ContentResponseDTO<>(true,
+                getStockRequestResultResponseList(stockRequestService.getAllByRequestedByBranch(branchId))));
+    }
+
+    private ResponseEntity<ContentResponseDTO<List<StockRequestResponse>>> getAllStockRequestsForBranch(String branchId) {
+        return ResponseEntity.ok(new ContentResponseDTO<>(true,
+                getStockRequestResultResponseList(stockRequestService.getAllByRequestedForBranch(branchId))));
+    }
+
     private List<StockRequestResponse> getStockRequestResponseList(List<StockRequest> stockrequests) {
         return stockrequests
+                .stream()
+                .map(this::getStockRequestResponse)
+                .collect(Collectors.toList());
+    }
+
+    private List<StockRequestResponse> getStockRequestResultResponseList(List<StockRequestResult> stockRequests) {
+        return stockRequests
                 .stream()
                 .map(this::getStockRequestResponse)
                 .collect(Collectors.toList());
@@ -126,6 +157,21 @@ public class StockRequestController implements CommonController {
                 .byBranchName(stockRequest.getByBranchId())
                 .forBranchName(stockRequest.getForBranchId())
                 .vehicleReg(stockRequest.getVehicleId())
+                .status(stockRequest.getStatus().getDescription())
+                .createdAt(getFormattedDateTime(stockRequest.getCreatedAt()))
+                .updatedAt(getFormattedDateTime(stockRequest.getUpdatedAt()))
+                .build();
+    }
+
+    private StockRequestResponse getStockRequestResponse(StockRequestResult stockRequest) {
+        return StockRequestResponse.builder()
+                .id(stockRequest.getId())
+                .byBranchId(stockRequest.getByBranchId())
+                .forBranchId(stockRequest.getForBranchId())
+                .vehicleId(stockRequest.getVehicleId())
+                .byBranchName(stockRequest.getByBranchName())
+                .forBranchName(stockRequest.getForBranchName())
+                .vehicleReg(stockRequest.getVehicleReg())
                 .status(stockRequest.getStatus().getDescription())
                 .createdAt(getFormattedDateTime(stockRequest.getCreatedAt()))
                 .updatedAt(getFormattedDateTime(stockRequest.getUpdatedAt()))
