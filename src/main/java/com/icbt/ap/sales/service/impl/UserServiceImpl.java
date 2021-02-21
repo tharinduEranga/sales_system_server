@@ -3,6 +3,7 @@ package com.icbt.ap.sales.service.impl;
 import com.icbt.ap.sales.controller.v1.model.request.UserLoginRequest;
 import com.icbt.ap.sales.entity.Branch;
 import com.icbt.ap.sales.entity.User;
+import com.icbt.ap.sales.exception.CustomAuthException;
 import com.icbt.ap.sales.exception.CustomServiceException;
 import com.icbt.ap.sales.repository.UserRepository;
 import com.icbt.ap.sales.service.BranchService;
@@ -82,15 +83,16 @@ public class UserServiceImpl implements UserService {
     @Override
     public User authenticate(UserLoginRequest loginRequest) {
         final User user = userRepository.findByUserName(loginRequest.getUsername());
-        if (user == null) throw new CustomServiceException(
-                "error.validation.common.not.found.code",
+        if (user == null) throw new CustomAuthException(
+                "error.validation.unauthorized.code",
                 "error.validation.username.not.found.message",
                 new String[]{loginRequest.getUsername()}
         );
         if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword()))
-            throw new CustomServiceException(
-                    "error.validation.common.already.exist.code",
-                    "error.validation.invalid.password.message"
+            throw new CustomAuthException(
+                    "error.validation.unauthorized.code",
+                    "error.validation.invalid.password.message",
+                    new String[]{}
             );
         user.setPassword(null);
         return user;

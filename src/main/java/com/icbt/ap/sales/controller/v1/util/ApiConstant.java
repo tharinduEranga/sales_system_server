@@ -28,6 +28,8 @@ public final class ApiConstant {
         public static final String FOR_BRANCH_REQUIRED = "By branch is mandatory";
         public static final String PRODUCT_DETAILS_REQUIRED = "Product details are mandatory";
         public static final String PRODUCT_ID_REQUIRED = "Product id is mandatory";
+        public static final String USERNAME_REQUIRED = "Username is mandatory";
+        public static final String PASSWORD_REQUIRED = "Password is mandatory";
 
         public static final String PATTERN_NUMBER = "^[0-9]*$";
         public static final String PATTERN_DECIMAL = "\\d*\\.?\\d+";

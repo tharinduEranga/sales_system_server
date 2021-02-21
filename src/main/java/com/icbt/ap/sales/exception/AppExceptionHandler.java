@@ -35,6 +35,12 @@ public class AppExceptionHandler {
         return getBusinessError(ex, ex.getCode(), locale);
     }
 
+    @ExceptionHandler(value = {CustomAuthException.class})
+    public ResponseEntity<Object> handleAuthException(CustomAuthException ex, Locale locale) {
+        log.error("Business Exception: " + ex.getMessage(), ex);
+        return getAuthError(ex, ex.getCode(), locale);
+    }
+
     @ExceptionHandler(value = {Exception.class})
     public ResponseEntity<CommonResponseDTO> handleInvalidInputException(Exception ex, Locale locale) {
         log.error("Server Exception: " + ex.getMessage(), ex);
@@ -77,6 +83,15 @@ public class AppExceptionHandler {
     private ResponseEntity<Object> getBusinessError(CustomServiceException ex, String code, Locale locale) {
         log.error("Bad request Exception: " + ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new CommonResponseDTO(false,
+                        messageSource.getMessage(code, ex.getArgs(), locale),
+                        messageSource.getMessage(ex.getMessage(), ex.getArgs(), locale))
+                );
+    }
+
+    private ResponseEntity<Object> getAuthError(CustomAuthException ex, String code, Locale locale) {
+        log.error("Auth Exception: " + ex.getMessage(), ex);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(new CommonResponseDTO(false,
                         messageSource.getMessage(code, ex.getArgs(), locale),
                         messageSource.getMessage(ex.getMessage(), ex.getArgs(), locale))
