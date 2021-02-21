@@ -17,6 +17,7 @@ SET MODE MySQL;
 -- ----------------------------
 -- Table structure for product
 -- ----------------------------
+DROP TABLE IF EXISTS `user`;
 DROP TABLE IF EXISTS `stock_request_detail`;
 DROP TABLE IF EXISTS `stock_request`;
 DROP TABLE IF EXISTS `vehicle`;
@@ -138,6 +139,24 @@ CREATE TABLE `stock_request_detail`
 );
 
 -- ----------------------------
+-- Table structure for user
+-- ----------------------------
+CREATE TABLE `user`
+(
+    `id`        varchar(255) NOT NULL PRIMARY KEY,
+    `username`  varchar(255) NOT NULL,
+    `password`  varchar(255) NOT NULL,
+    `user_role` int(255)     NOT NULL,
+    `branch_id` varchar(255),
+    INDEX user_bra_ind (branch_id),
+    FOREIGN KEY (branch_id)
+        REFERENCES branch (id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+);
+
+
+-- ----------------------------
 -- Records of product
 -- ----------------------------
 INSERT INTO `product`
@@ -184,3 +203,9 @@ INSERT INTO `stock_request_detail` (`id`, `qty`, `stock_request_id`, `product_id
 VALUES ('1212', 10, 'fer324324', '12cbc2ca-69d8-11eb-8f8a-a81e849e9ba1');
 INSERT INTO `stock_request_detail` (`id`, `qty`, `stock_request_id`, `product_id`)
 VALUES ('4213', 30, 'fer324324', '12cbc2ca-69d8-11eb-8f8a-a81e849e9ba2');
+
+-- ----------------------------
+-- Records of user
+-- ----------------------------
+INSERT INTO `user` (`id`, `username`, `password`, `user_role`, `branch_id`)
+VALUES ('232323', 'super', '$2a$10$9Ibi/VZPIe4C7qW/Rr27g.GqjamfoejUu20WFZeFUcYIVyal9CrDK', 1, '43242324');
