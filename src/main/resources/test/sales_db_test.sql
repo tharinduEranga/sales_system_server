@@ -208,4 +208,4 @@ VALUES ('4213', 30, 'fer324324', '12cbc2ca-69d8-11eb-8f8a-a81e849e9ba2');
 -- Records of user
 -- ----------------------------
 INSERT INTO `user` (`id`, `username`, `password`, `user_role`, `branch_id`)
-VALUES ('232323', 'super', '$2a$10$9Ibi/VZPIe4C7qW/Rr27g.GqjamfoejUu20WFZeFUcYIVyal9CrDK', 1, '43242324');
+VALUES ('232323', 'super', '$2a$10$D0or8FRf8ANxQ.0jjPxk9euW9tOIdc9yFpTQj5dh8kmKu.LnrDbRq', 1, '43242324');
