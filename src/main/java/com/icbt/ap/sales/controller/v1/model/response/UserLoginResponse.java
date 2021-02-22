@@ -1,5 +1,6 @@
 package com.icbt.ap.sales.controller.v1.model.response;
 
+import com.icbt.ap.sales.enums.UserRole;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -14,6 +15,6 @@ import lombok.experimental.SuperBuilder;
 public class UserLoginResponse {
     private String id;
     private String username;
-    private String userRole;
+    private UserRole userRole;
     private String branchId;
 }

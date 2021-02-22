@@ -46,7 +46,7 @@ public class UserController implements CommonController {
         return ResponseEntity.ok(UserLoginResponse.builder()
                 .id(user.getId())
                 .username(user.getUsername())
-                .userRole(user.getUserRole().getDescription())
+                .userRole(user.getUserRole())
                 .branchId(user.getBranchId())
                 .build()
         );
