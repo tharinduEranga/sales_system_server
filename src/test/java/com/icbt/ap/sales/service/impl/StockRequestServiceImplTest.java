@@ -2,6 +2,7 @@ package com.icbt.ap.sales.service.impl;
 
 import com.icbt.ap.sales.config.AppConfig;
 import com.icbt.ap.sales.entity.*;
+import com.icbt.ap.sales.enums.StockRequestStatus;
 import com.icbt.ap.sales.repository.StockRepository;
 import com.icbt.ap.sales.repository.StockRequestDetailRepository;
 import com.icbt.ap.sales.repository.StockRequestRepository;
@@ -117,5 +118,14 @@ class StockRequestServiceImplTest {
 
     @Test
     void getAllByRequestedForBranch() {
+    }
+
+    @Test
+    void updateStatus() {
+        final String stockReqId = "fer324324";
+        final StockRequestStatus status = StockRequestStatus.REJECTED;
+        stockRequestService.updateStatus(stockReqId, status);
+        final StockRequest stockRequest = stockRequestService.getById(stockReqId);
+        assertEquals(status, stockRequest.getStatus());
     }
 }

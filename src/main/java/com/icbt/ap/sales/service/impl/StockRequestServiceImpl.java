@@ -2,6 +2,7 @@ package com.icbt.ap.sales.service.impl;
 
 import com.icbt.ap.sales.entity.*;
 import com.icbt.ap.sales.entity.query.StockRequestResult;
+import com.icbt.ap.sales.enums.StockRequestStatus;
 import com.icbt.ap.sales.exception.CustomServiceException;
 import com.icbt.ap.sales.repository.*;
 import com.icbt.ap.sales.service.*;
@@ -84,6 +85,13 @@ public class StockRequestServiceImpl implements StockRequestService {
     @Override
     public List<StockRequestResult> getAllByRequestedForBranch(String stockRequestId) {
         return stockRequestRepository.findAllByRequestToBranch(stockRequestId);
+    }
+
+    @Override
+    public void updateStatus(String stockRequestId, StockRequestStatus status) {
+        /*validates the incoming data*/
+        final StockRequest stockRequestById = getById(stockRequestId);
+        stockRequestRepository.updateStatus(stockRequestById.getId(), status);
     }
 
     /*Internal functions below*/

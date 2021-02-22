@@ -2,6 +2,7 @@ package com.icbt.ap.sales.service;
 
 import com.icbt.ap.sales.entity.StockRequest;
 import com.icbt.ap.sales.entity.query.StockRequestResult;
+import com.icbt.ap.sales.enums.StockRequestStatus;
 import com.icbt.ap.sales.service.main.CrudService;
 import org.springframework.stereotype.Service;
 
@@ -18,4 +19,5 @@ public interface StockRequestService extends CrudService<String, StockRequest> {
 
     List<StockRequestResult> getAllByRequestedForBranch(String branchId);
 
+    void updateStatus(String stockRequestId, StockRequestStatus status);
 }

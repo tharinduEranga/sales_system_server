@@ -10,6 +10,7 @@ import com.icbt.ap.sales.dto.ContentResponseDTO;
 import com.icbt.ap.sales.entity.StockRequest;
 import com.icbt.ap.sales.entity.StockRequestDetail;
 import com.icbt.ap.sales.entity.query.StockRequestResult;
+import com.icbt.ap.sales.enums.StockRequestStatus;
 import com.icbt.ap.sales.service.StockRequestService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -88,6 +89,14 @@ public class StockRequestController implements CommonController {
         return getAllStockRequestsForBranch(branchId);
     }
 
+    @PatchMapping(path = "/{stockRequestId}/status/{status}")
+    public ResponseEntity<CommonResponseDTO> updateStatus(
+            @PathVariable(name = "stockRequestId") String stockRequestId,
+            @PathVariable(name = "status") StockRequestStatus status) {
+        log.info("Update stock request status by id, StockRequest id: {}", stockRequestId);
+        return updateStockRequestStatus(stockRequestId, status);
+    }
+
     /*Internal functions*/
 
     private ResponseEntity<ContentResponseDTO<List<StockRequestResponse>>> getAllStockRequests() {
@@ -121,6 +130,15 @@ public class StockRequestController implements CommonController {
         return new ResponseEntity<>(new CommonResponseDTO(true,
                 getCode("success.confirmation.common.updated.code"),
                 getMessage("success.confirmation.stock.request.deleted.message")),
+                HttpStatus.OK);
+    }
+
+    private ResponseEntity<CommonResponseDTO> updateStockRequestStatus(
+            String stockRequestId, StockRequestStatus status) {
+        stockRequestService.updateStatus(stockRequestId, status);
+        return new ResponseEntity<>(new CommonResponseDTO(true,
+                getCode("success.confirmation.common.updated.code"),
+                getMessage("success.confirmation.stock.request.updated.message")),
                 HttpStatus.OK);
     }
 
