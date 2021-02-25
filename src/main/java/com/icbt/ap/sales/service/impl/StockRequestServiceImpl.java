@@ -1,7 +1,9 @@
 package com.icbt.ap.sales.service.impl;
 
+import com.icbt.ap.sales.controller.v1.model.request.StockQtyUpdateRequest;
 import com.icbt.ap.sales.entity.*;
 import com.icbt.ap.sales.entity.query.StockRequestResult;
+import com.icbt.ap.sales.entity.query.StockResult;
 import com.icbt.ap.sales.enums.StockRequestStatus;
 import com.icbt.ap.sales.exception.CustomServiceException;
 import com.icbt.ap.sales.repository.*;
@@ -12,6 +14,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -88,11 +92,15 @@ public class StockRequestServiceImpl implements StockRequestService {
     }
 
     @Override
+    @Transactional
     public void updateStatus(String stockRequestId, StockRequestStatus status) {
         /*validates the incoming data*/
         final StockRequest stockRequestById = getById(stockRequestId);
+        updateStockQty(stockRequestById);
         stockRequestRepository.updateStatus(stockRequestById.getId(), status);
+        addNewStockToByBranch(stockRequestById);
     }
+
 
     /*Internal functions below*/
 
@@ -110,11 +118,64 @@ public class StockRequestServiceImpl implements StockRequestService {
         validateStockDetailsRequest(stockRequest.getStockRequestDetails());
     }
 
+    private void updateStockQty(StockRequest stockRequest) {
+        final List<StockRequestDetail> stockRequestDetails = stockRequestDetailRepository
+                .findAllByStockRequest(stockRequest.getId());
+        stockRequest.setStockRequestDetails(stockRequestDetails);
+
+        stockService.updateStockQty(getStockQtyUpdates(stockRequestDetails));
+    }
+
+    private List<StockQtyUpdateRequest> getStockQtyUpdates(List<StockRequestDetail> stockRequestDetails) {
+        List<StockQtyUpdateRequest> stockQtyUpdateRequests = new ArrayList<>();
+        stockRequestDetails.stream().map(this::getStockQtyUpdateRequest).forEach(stockQtyUpdateRequests::addAll);
+        return stockQtyUpdateRequests;
+    }
+
+    private List<StockQtyUpdateRequest> getStockQtyUpdateRequest(StockRequestDetail stockRequestDetail) {
+        final List<StockResult> stocks = stockService.getAllByProduct(stockRequestDetail.getProductId());
+        List<StockQtyUpdateRequest> stockQtyUpdateRequests = new ArrayList<>();
+        int qty = stockRequestDetail.getQty();
+        for (Stock stock : stocks) {
+            if (qty > stock.getQty()) {
+                stockQtyUpdateRequests.add(StockQtyUpdateRequest.builder()
+                        .id(stock.getId())
+                        .qty(stock.getQty() * -1).build());
+                qty = qty - stock.getQty();
+            } else {
+                stockQtyUpdateRequests.add(StockQtyUpdateRequest.builder()
+                        .id(stock.getId())
+                        .qty(qty * -1).build());
+                break;
+            }
+        }
+        return stockQtyUpdateRequests;
+    }
+
     private void validateStockDetailsRequest(List<StockRequestDetail> stockRequestDetails) {
         final List<String> productIdList = stockRequestDetails
                 .stream()
                 .map(StockRequestDetail::getProductId)
                 .collect(Collectors.toList());
         productService.validateAndGetProductsByIds(productIdList);
+    }
+
+    private void addNewStockToByBranch(StockRequest stockRequestById) {
+        final String byBranchId = stockRequestById.getByBranchId();
+        final Branch byBranch = branchService.getById(byBranchId);
+        stockRequestById.getStockRequestDetails()
+                .stream()
+                .map(stockRequestDetail -> getNewAddStock(stockRequestDetail, byBranch))
+                .forEach(stockService::add);
+    }
+
+    private Stock getNewAddStock(StockRequestDetail stockRequestDetail, Branch byBranch) {
+        Stock stock = new Stock();
+        stock.setBranchId(byBranch.getId());
+        stock.setDescription("New stocks from " + byBranch.getName());
+        stock.setQty(stockRequestDetail.getQty());
+        stock.setProductId(stockRequestDetail.getProductId());
+        stock.setPrice(BigDecimal.ZERO);
+        return stock;
     }
 }
