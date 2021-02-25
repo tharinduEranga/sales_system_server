@@ -2,6 +2,7 @@ package com.icbt.ap.sales.service.impl;
 
 import com.icbt.ap.sales.entity.Product;
 import com.icbt.ap.sales.enums.ProductStatus;
+import com.icbt.ap.sales.exception.CustomServiceException;
 import com.icbt.ap.sales.repository.ProductRepository;
 import com.icbt.ap.sales.repository.impl.ProductRepositoryImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +16,10 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import javax.sql.DataSource;
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Tharindu Eranga
@@ -42,22 +47,47 @@ class ProductServiceImplTest {
     @Test
     void add() {
         String name = "Sugar";
-        productService.add(Product.builder().name(name).status(ProductStatus.ACTIVE).build());
+        final Product product = Product.builder().name(name).status(ProductStatus.ACTIVE).build();
+        productService.add(product);
+        final Product productByName = productRepository.findByName(name);
+        assertEquals(product.getName(), productByName.getName());
+        assertEquals(product.getStatus(), productByName.getStatus());
     }
 
     @Test
     void update() {
+        String id = "12cbc2ca-69d8-11eb-8f8a-a81e849e9ba1";
+        final Optional<Product> optionalProduct = productRepository.findById(id);
+        assertTrue(optionalProduct.isPresent());
+        final Product product = optionalProduct.get();
+        product.setName("Tea");
+        product.setStatus(ProductStatus.INACTIVE);
+        productService.update(product);
+
+        final Optional<Product> updatedOptionalProduct = productRepository.findById(id);
+        assertTrue(updatedOptionalProduct.isPresent());
+        assertEquals(product, updatedOptionalProduct.get());
     }
 
     @Test
     void delete() {
+        String id = "12cbc2ca-69d8-11eb-8f8a-a81e849e9ba";
+        productService.delete(id);
+        assertThrows(CustomServiceException.class, () -> {
+            final Product product = productService.getById(id);
+        });
     }
 
     @Test
     void getById() {
+        String id = "12cbc2ca-69d8-11eb-8f8a-a81e849e9ba";
+        final Product product = productService.getById(id);
+        assertEquals(id, product.getId());
     }
 
     @Test
     void getAll() {
+        final List<Product> products = productService.getAll();
+        assertFalse(products.isEmpty());
     }
 }
