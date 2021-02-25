@@ -4,6 +4,7 @@ import com.icbt.ap.sales.config.AppConfig;
 import com.icbt.ap.sales.entity.Branch;
 import com.icbt.ap.sales.entity.Product;
 import com.icbt.ap.sales.entity.Stock;
+import com.icbt.ap.sales.entity.query.StockResult;
 import com.icbt.ap.sales.enums.BranchType;
 import com.icbt.ap.sales.repository.StockRepository;
 import com.icbt.ap.sales.repository.impl.BranchRepositoryImpl;
@@ -26,9 +27,10 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import javax.sql.DataSource;
 
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Tharindu Eranga
@@ -81,6 +83,18 @@ class StockServiceImplTest {
 
     @Test
     void update() {
+        String id = "643344fregt4t1";
+        final Stock stock = stockService.getById(id);
+        stock.setPrice(BigDecimal.TEN);
+        stock.setQty(30);
+        stock.setDescription("Desc");
+        stock.setBranchId("323432");
+        stock.setProductId("12cbc2ca-69d8-11eb-8f8a-a81e849e9ba2");
+        stockService.update(stock);
+
+        final Optional<Stock> optionalStock = stockRepository.findById(id);
+        assertTrue(optionalStock.isPresent());
+        assertEquals(optionalStock.get().getId(), stock.getId());
     }
 
     @Test
@@ -93,10 +107,14 @@ class StockServiceImplTest {
 
     @Test
     void getAll() {
+        final List<Stock> stocks = stockService.getAll();
+        assertFalse(stocks.isEmpty());
     }
 
     @Test
     void getAllByBranch() {
+        final List<StockResult> stockResults = stockService.getAllByBranch("43242324");
+        assertFalse(stockResults.isEmpty());
     }
 
     @Test
