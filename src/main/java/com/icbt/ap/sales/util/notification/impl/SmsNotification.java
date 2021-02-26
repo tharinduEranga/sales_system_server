@@ -10,9 +10,16 @@ import com.icbt.ap.sales.util.notification.dto.NotificationDTO;
 public class SmsNotification implements NotificationSender {
     private static SmsNotification smsNotification;
 
+    /**
+     * private constrictor to initialize properties related to email configurations.
+     */
     private SmsNotification() {
     }
 
+
+    /**
+     * @return the SmsNotification instance which is initialized only once.
+     */
     public static SmsNotification getInstance() {
         if (smsNotification == null) {
             smsNotification = new SmsNotification();
@@ -20,6 +27,9 @@ public class SmsNotification implements NotificationSender {
         return smsNotification;
     }
 
+    /**
+     * @param notificationDTO send notification details
+     */
     @Override
     public void sendNotification(NotificationDTO notificationDTO) {
         throw new UnsupportedOperationException("SMS notification is not implemented yet!");

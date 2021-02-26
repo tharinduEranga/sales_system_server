@@ -9,7 +9,6 @@ import com.icbt.ap.sales.util.notification.impl.SmsNotification;
  * @date Thu 25 Feb 2021
  */
 public class NotificationFactory {
-
     private static NotificationFactory notificationFactory;
 
     private NotificationFactory() {
@@ -22,6 +21,10 @@ public class NotificationFactory {
         return notificationFactory;
     }
 
+    /**
+     * @param type the notification type
+     * @return the notification concrete instance of the given type.
+     */
     public NotificationSender getNotificationSender(NotificationType type) {
         switch (type) {
             case SMS:
